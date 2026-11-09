@@ -298,6 +298,139 @@
       padding: 6px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px;
     }
 
+
+    /* NEW-GAMES-CSS-MARKER */
+    /* ===== NEW GAMES ===== */
+    .cap-stage {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      margin: 18px 0;
+      min-height: 240px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      text-align: center;
+    }
+    .cap-title { font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+    .cap-prompt { font-size: 15px; }
+    .cap-tiles { display: grid; grid-template-columns: repeat(3, 74px); gap: 8px; }
+    .cap-tile {
+      width: 74px; height: 74px; display: flex; align-items: center; justify-content: center;
+      font-size: 26px; border: 1px solid var(--border); border-radius: 8px;
+      background: rgba(255,255,255,0.04); cursor: pointer; user-select: none;
+      transition: all 0.12s;
+    }
+    .cap-tile.sel { border-color: var(--accent); background: rgba(124,92,255,0.25); transform: scale(0.96); }
+    .cap-btn {
+      padding: 10px 22px; border-radius: 8px; border: 1px solid var(--border);
+      background: rgba(124,92,255,0.15); color: var(--text); cursor: pointer;
+      font-size: 12px; letter-spacing: 1px; user-select: none;
+    }
+    .cap-btn:hover { background: rgba(124,92,255,0.3); }
+    .cap-btn.rec { border-color: var(--accent2); }
+    .cap-input {
+      padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: monospace; text-align: center;
+      font-size: 16px; letter-spacing: 4px; text-transform: uppercase;
+    }
+    .cap-check {
+      display: flex; align-items: center; gap: 12px; border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px 20px; cursor: pointer;
+      background: rgba(255,255,255,0.04); user-select: none; min-width: 220px;
+    }
+    .cap-box {
+      width: 22px; height: 22px; border: 1px solid var(--accent); border-radius: 3px;
+      display: flex; align-items: center; justify-content: center; font-size: 15px; color: #50c878;
+    }
+    .cap-drag {
+      position: relative; width: 260px; max-width: 100%; height: 150px;
+      border: 1px dashed var(--border); border-radius: 10px;
+      background: rgba(255,255,255,0.02); overflow: hidden;
+    }
+    .cap-slot {
+      position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+      width: 56px; height: 56px; border: 2px dashed rgba(124,92,255,0.6); border-radius: 8px;
+    }
+    .cap-ball {
+      position: absolute; left: 16px; top: 56px;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      cursor: grab; box-shadow: 0 0 18px rgba(124,92,255,0.5); touch-action: none;
+    }
+    .cap-arrow {
+      width: 90px; height: 90px; display: flex; align-items: center; justify-content: center;
+      font-size: 54px; line-height: 1; transition: transform 0.05s linear;
+    }
+    .cap-range { width: 240px; accent-color: #7c5cff; }
+    .cap-swatch { width: 110px; height: 70px; border-radius: 10px; border: 1px solid var(--border); }
+    .cap-choices { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .cap-run {
+      position: relative; width: 320px; max-width: 100%; height: 170px;
+      border: 1px dashed var(--border); border-radius: 10px; overflow: hidden;
+      background: rgba(255,255,255,0.02);
+    }
+    .cap-runbtn {
+      position: absolute; left: 120px; top: 65px; padding: 10px 18px; border-radius: 8px;
+      border: 1px solid var(--accent); background: rgba(124,92,255,0.25); color: var(--text);
+      cursor: pointer; font-size: 12px; transition: left 0.12s, top 0.12s;
+    }
+    .cap-timer { font-size: 11px; color: var(--muted); letter-spacing: 2px; }
+    .cap-ok { color: #50c878; font-size: 16px; }
+
+    /* stopwatch */
+    .sw-stage {
+      text-align: center; padding: 40px 20px;
+      border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,0.02);
+    }
+    .sw-dot {
+      width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 22px;
+      background: radial-gradient(circle at 35% 30%, #a58bff, #5b3fd6);
+      box-shadow: 0 0 40px rgba(124,92,255,0.5); transition: all 0.15s;
+    }
+    .sw-dot.running { animation: swpulse 1s infinite ease-in-out; }
+    @keyframes swpulse { 0%,100% { box-shadow: 0 0 30px rgba(124,92,255,0.4); } 50% { box-shadow: 0 0 70px rgba(124,92,255,0.9); } }
+    .sw-result { font-size: 22px; margin: 14px 0; }
+    .sw-sub { font-size: 12px; color: var(--muted); }
+
+    /* odd one out */
+    .odd-grid {
+      display: grid; gap: 4px; margin: 20px auto; width: fit-content;
+    }
+    .odd-tile {
+      width: 34px; height: 34px; border-radius: 5px; cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .odd-tile:hover { transform: scale(1.1); }
+    .odd-hud { display: flex; gap: 24px; justify-content: center; font-size: 12px; color: var(--muted); }
+
+    /* dots */
+    .dots-stage {
+      position: relative; height: 260px; margin: 18px 0;
+      border: 1px solid var(--border); border-radius: 12px;
+      background: rgba(255,255,255,0.02); overflow: hidden;
+    }
+    .dots-dot {
+      position: absolute; width: 9px; height: 9px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 8px rgba(124,92,255,0.8);
+    }
+    .dots-hud { display: flex; gap: 24px; justify-content: center; font-size: 12px; color: var(--muted); }
+
+    /* precision bar */
+    .prec-track {
+      position: relative; height: 54px; margin: 22px 0; border-radius: 10px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.03); overflow: hidden;
+    }
+    .prec-zone {
+      position: absolute; top: 0; bottom: 0;
+      background: rgba(80,200,120,0.22); border-left: 1px solid #50c878; border-right: 1px solid #50c878;
+    }
+    .prec-head {
+      position: absolute; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(180deg, #fff, var(--accent2));
+      box-shadow: 0 0 12px rgba(255,90,138,0.9);
+    }
+    .prec-hud { display: flex; gap: 24px; justify-content: center; font-size: 12px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -352,6 +485,32 @@
         <span class="badge">PERCEPTION</span>
         <h3>Color Guess</h3>
         <p>Which hex code matches the color shown? 10 rounds.</p>
+      </div>
+<!-- NEW-GAMES-CARDS-MARKER -->
+      <div class="game-card" onclick="showGame('captcha')">
+        <span class="badge">HUMANITY</span>
+        <h3>Definitely Not A Robot</h3>
+        <p>Eight captcha challenges that get progressively less reasonable. Prove you're human.</p>
+      </div>
+      <div class="game-card" onclick="showGame('stopwatch')">
+        <span class="badge">TIMING</span>
+        <h3>Blind Stopwatch</h3>
+        <p>No clock. No timer. Stop it at exactly 10 seconds by vibes alone.</p>
+      </div>
+      <div class="game-card" onclick="showGame('odd')">
+        <span class="badge">PERCEPTION</span>
+        <h3>Odd One Out</h3>
+        <p>One tile doesn't match. The difference shrinks every round.</p>
+      </div>
+      <div class="game-card" onclick="showGame('dots')">
+        <span class="badge">ESTIMATION</span>
+        <h3>Count The Dots</h3>
+        <p>Dots flash for one second, then vanish. Guess how many survived.</p>
+      </div>
+      <div class="game-card" onclick="showGame('precision')">
+        <span class="badge">REFLEX</span>
+        <h3>Precision Bar</h3>
+        <p>Stop the sweeping bar inside the green zone. The zone shrinks. The bar lies.</p>
       </div>
     </div>
   </div>
@@ -514,6 +673,11 @@
           <div class="admin-status" id="st-color"></div>
         </div>
         <div class="admin-item">
+          <h4>DEF NOT A ROBOT</h4>
+          <button onclick="tasSkipCaptcha()">skip captcha</button>
+          <div class="admin-status" id="st-cap"></div>
+        </div>
+        <div class="admin-item">
           <h4>EVERYTHING</h4>
           <button onclick="tasAll()">run all tas</button>
           <button onclick="tasClear()" style="margin-top:6px">clear log</button>
@@ -526,6 +690,69 @@
     </div>
   </div>
 
+  <!-- NEW-GAMES-VIEWS-MARKER -->
+  <!-- Definately Not A Robot -->
+  <div class="game-view" id="captcha">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Definitely Not A Robot</h2>
+    <p style="color:var(--muted);margin:8px 0">Complete all eight verification steps. They get worse.</p>
+    <div class="cap-stage" id="capStage"></div>
+    <div class="cap-timer" id="capTimer"></div>
+  </div>
+
+  <!-- Blind Stopwatch -->
+  <div class="game-view" id="stopwatch">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Blind Stopwatch</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Start it, feel 10 seconds pass, stop it. No numbers until you're done.</p>
+    <div class="sw-stage">
+      <div class="sw-dot" id="swDot"></div>
+      <button class="cap-btn" id="swBtn" onclick="swPress()">start</button>
+      <div class="sw-result" id="swResult"></div>
+      <div class="sw-sub" id="swSub"></div>
+    </div>
+  </div>
+
+  <!-- Odd One Out -->
+  <div class="game-view" id="odd">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Odd One Out</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Click the tile that doesn't match.</p>
+    <div class="odd-hud" id="oddHud"></div>
+    <div class="odd-grid" id="oddGrid"></div>
+    <div style="text-align:center;margin-top:14px"><button class="cap-btn" onclick="initOdd()">restart</button></div>
+  </div>
+
+  <!-- Count The Dots -->
+  <div class="game-view" id="dots">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Count The Dots</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">One second. Then they're gone. No pausing.</p>
+    <div class="dots-hud" id="dotsHud"></div>
+    <div class="dots-stage" id="dotsStage"></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
+      <input type="number" class="cap-input" id="dotsInput" placeholder="how many?" style="width:180px">
+      <button class="cap-btn" onclick="dotsSubmit()">submit</button>
+    </div>
+    <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:10px" id="dotsMsg"></div>
+  </div>
+
+  <!-- Precision Bar -->
+  <div class="game-view" id="precision">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Precision Bar</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Click or press space when the marker is in the green zone. 10 rounds.</p>
+    <div class="prec-hud" id="precHud"></div>
+    <div class="prec-track" id="precTrack">
+      <div class="prec-zone" id="precZone"></div>
+      <div class="prec-head" id="precHead"></div>
+    </div>
+    <div style="text-align:center">
+      <button class="cap-btn" onclick="precStop()" id="precBtn">stop</button>
+      <button class="cap-btn" onclick="initPrec()">restart</button>
+    </div>
+    <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:10px" id="precMsg"></div>
+  </div>
   <script>
     // Navigation
     function showGame(name) {
@@ -1175,12 +1402,463 @@
       tasTyping();
       tasGuess();
       tasColor();
+      tasSkipCaptcha();
       st('st-all', 'all tas executed.');
     }
     function tasClear() {
-      ['st-pw','st-spend','st-clicker','st-reaction','st-memory','st-typing','st-guess','st-color','st-all'].forEach(function (id) { st(id, ''); });
+      ['st-pw','st-spend','st-clicker','st-reaction','st-memory','st-typing','st-guess','st-color','st-cap','st-all'].forEach(function (id) { st(id, ''); });
     }
 
+    /* NEW-GAMES-JS-MARKER */
+    /* ===== GAME INIT HOOK ===== */
+    (function () {
+      var _sg = showGame;
+      showGame = function (name) {
+        _sg(name);
+        if (name !== 'precision') { precActive = false; cancelAnimationFrame(precRaf); }
+        if (name !== 'captcha') clearInterval(capTimerId);
+        var fn = window['init_' + name];
+        if (typeof fn === 'function') fn();
+      };
+      var _sh = showHub;
+      showHub = function () {
+        precActive = false;
+        cancelAnimationFrame(precRaf);
+        clearInterval(capTimerId);
+        _sh();
+      };
+    })();
+
+    /* ===== DEFINITELY NOT A ROBOT ===== */
+    var capIndex = 0, capStartTime = 0, capTimerId = null;
+
+    var CAPTCHA_ROUNDS = [
+      { mount: function (el, done) {
+        el.innerHTML = '<div class="cap-check" id="capCheck"><div class="cap-box" id="capBox"></div><span>i am not a robot</span></div><div class="cap-title" id="capSpin"></div>';
+        var box = el.querySelector('#capBox');
+        var spin = el.querySelector('#capSpin');
+        el.querySelector('#capCheck').addEventListener('click', function () {
+          if (box.dataset.done) return;
+          box.dataset.done = '1';
+          box.textContent = '\u2713';
+          box.style.background = 'rgba(80,200,120,0.3)';
+          spin.textContent = 'checking...';
+          setTimeout(function () { spin.textContent = 'verified.'; setTimeout(done, 350); }, 1100);
+        });
+      } },
+      { mount: function (el, done) {
+        var decoys = ['\uD83D\uDD3A', '\uD83D\uDD35', '\uD83D\uDFEA', '\u2B1B', '\u2B1C', '\uD83D\uDD36', '\uD83D\uDD37', '\uD83D\uDFE2'];
+        var stars = 3 + Math.floor(Math.random() * 2);
+        var arr = [];
+        for (var i = 0; i < stars; i++) arr.push('\u2B50');
+        for (var j = 0; arr.length < 9; j++) arr.push(decoys[j % decoys.length]);
+        for (var k = arr.length - 1; k > 0; k--) { var m = Math.floor(Math.random() * (k + 1)); var t = arr[k]; arr[k] = arr[m]; arr[m] = t; }
+        el.innerHTML = '<div class="cap-prompt">select all squares with a star</div><div class="cap-tiles" id="capTiles"></div><div class="cap-title" id="capErr"></div><button class="cap-btn" id="capVerify">verify</button>';
+        var tiles = el.querySelector('#capTiles');
+        arr.forEach(function (sym) {
+          var d = document.createElement('div');
+          d.className = 'cap-tile';
+          d.textContent = sym;
+          d.dataset.star = sym === '\u2B50' ? '1' : '0';
+          d.addEventListener('click', function () { d.classList.toggle('sel'); });
+          tiles.appendChild(d);
+        });
+        el.querySelector('#capVerify').addEventListener('click', function () {
+          var ok = true;
+          el.querySelectorAll('.cap-tile').forEach(function (d) {
+            var sel = d.classList.contains('sel');
+            if (sel !== (d.dataset.star === '1')) ok = false;
+          });
+          if (ok) { el.querySelector('#capErr').textContent = 'correct.'; setTimeout(done, 350); }
+          else el.querySelector('#capErr').textContent = 'wrong. try again.';
+        });
+      } },
+      { mount: function (el, done) {
+        el.innerHTML = '<div class="cap-prompt">hold the button for exactly 3 seconds</div><button class="cap-btn rec" id="capHold">hold me</button><div class="cap-title" id="capHoldMsg"></div>';
+        var b = el.querySelector('#capHold');
+        var msg = el.querySelector('#capHoldMsg');
+        var t0 = 0;
+        b.addEventListener('pointerdown', function () { t0 = Date.now(); b.style.background = 'rgba(255,90,138,0.35)'; });
+        b.addEventListener('pointerup', function () {
+          b.style.background = '';
+          if (!t0) return;
+          var d = Date.now() - t0;
+          t0 = 0;
+          if (Math.abs(d - 3000) <= 160) { msg.textContent = 'good. ' + d + 'ms'; setTimeout(done, 350); }
+          else msg.textContent = (d < 3000 ? 'too short' : 'too long') + ' (' + d + 'ms). again.';
+        });
+      } },
+      { mount: function (el, done) {
+        var words = ['LUX', 'VOID', 'CUBE', 'OBJBOX', 'ATTIC'];
+        var word = words[Math.floor(Math.random() * words.length)];
+        el.innerHTML = '<div class="cap-prompt">type <b>' + word + '</b> backwards</div><input class="cap-input" id="capRev" maxlength="12" autocomplete="off" spellcheck="false"><div class="cap-title" id="capRevMsg"></div>';
+        var inp = el.querySelector('#capRev');
+        var msg = el.querySelector('#capRevMsg');
+        inp.focus();
+        inp.addEventListener('input', function () {
+          var v = inp.value.toUpperCase().replace(/\s/g, '');
+          if (v.length < word.length) return;
+          var target = word.split('').reverse().join('');
+          if (v === target) { msg.textContent = 'correct.'; setTimeout(done, 300); }
+          else { msg.textContent = 'nope.'; inp.value = ''; }
+        });
+      } },
+      { mount: function (el, done) {
+        el.innerHTML = '<div class="cap-prompt">drag the circle into the square</div><div class="cap-drag" id="capDrag"><div class="cap-slot" id="capSlot"></div><div class="cap-ball" id="capBall"></div></div>';
+        var wrap = el.querySelector('#capDrag');
+        var ball = el.querySelector('#capBall');
+        var slot = el.querySelector('#capSlot');
+        var dragging = false;
+        ball.addEventListener('pointerdown', function (e) { dragging = true; ball.setPointerCapture(e.pointerId); });
+        ball.addEventListener('pointermove', function (e) {
+          if (!dragging) return;
+          var r = wrap.getBoundingClientRect();
+          var x = Math.max(0, Math.min(r.width - 36, e.clientX - r.left - 18));
+          var y = Math.max(0, Math.min(r.height - 36, e.clientY - r.top - 18));
+          ball.style.left = x + 'px';
+          ball.style.top = y + 'px';
+        });
+        ball.addEventListener('pointerup', function () {
+          dragging = false;
+          var br = ball.getBoundingClientRect(), sr = slot.getBoundingClientRect();
+          var dx = (br.left + br.width / 2) - (sr.left + sr.width / 2);
+          var dy = (br.top + br.height / 2) - (sr.top + sr.height / 2);
+          if (Math.sqrt(dx * dx + dy * dy) < 30) done();
+        });
+      } },
+      { mount: function (el, done) {
+        var start = 60 + Math.floor(Math.random() * 240);
+        el.innerHTML = '<div class="cap-prompt">rotate the arrow until it points up</div><div class="cap-arrow" id="capArrow">\u2B06</div><input type="range" min="0" max="359" value="' + start + '" class="cap-range" id="capRot"><div class="cap-title" id="capRotMsg"></div>';
+        var arrow = el.querySelector('#capArrow');
+        var rot = el.querySelector('#capRot');
+        var msg = el.querySelector('#capRotMsg');
+        rot.addEventListener('input', function () {
+          var v = +rot.value;
+          arrow.style.transform = 'rotate(' + v + 'deg)';
+          if (Math.min(v, 360 - v) <= 6) { msg.textContent = 'aligned.'; setTimeout(done, 300); }
+        });
+      } },
+      { mount: function (el, done) {
+        var colors = [
+          { hex: '#e04a4a', name: 'crimson' },
+          { hex: '#4a7ae0', name: 'azure' },
+          { hex: '#4ae07a', name: 'mint' },
+          { hex: '#e0c04a', name: 'mustard' },
+          { hex: '#a04ae0', name: 'violet' },
+          { hex: '#e08a4a', name: 'tangerine' }
+        ];
+        var pick = colors[Math.floor(Math.random() * colors.length)];
+        var opts = [pick];
+        while (opts.length < 4) {
+          var c = colors[Math.floor(Math.random() * colors.length)];
+          if (opts.indexOf(c) === -1) opts.push(c);
+        }
+        for (var i = opts.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = opts[i]; opts[i] = opts[j]; opts[j] = t; }
+        el.innerHTML = '<div class="cap-prompt">what color is this, really?</div><div class="cap-swatch" id="capSw"></div><div class="cap-choices" id="capCh"></div><div class="cap-title" id="capChMsg"></div>';
+        el.querySelector('#capSw').style.background = pick.hex;
+        var ch = el.querySelector('#capCh');
+        var msg = el.querySelector('#capChMsg');
+        opts.forEach(function (o) {
+          var b = document.createElement('button');
+          b.className = 'cap-btn';
+          b.textContent = o.name;
+          b.addEventListener('click', function () {
+            if (o === pick) { msg.textContent = 'correct.'; setTimeout(done, 300); }
+            else msg.textContent = 'wrong. look closer.';
+          });
+          ch.appendChild(b);
+        });
+      } },
+      { mount: function (el, done) {
+        el.innerHTML = '<div class="cap-prompt">confirm you are human</div><div class="cap-run" id="capRun"><button class="cap-runbtn" id="capRunBtn">i am human</button></div><div class="cap-title" id="capRunMsg">it does not want to be clicked</div>';
+        var wrap = el.querySelector('#capRun');
+        var btn = el.querySelector('#capRunBtn');
+        var msg = el.querySelector('#capRunMsg');
+        var dodges = 0;
+        btn.addEventListener('pointerenter', function () {
+          if (dodges >= 3) return;
+          dodges++;
+          var w = Math.max(10, wrap.clientWidth - 130);
+          var h = Math.max(10, wrap.clientHeight - 46);
+          btn.style.left = Math.floor(Math.random() * w) + 'px';
+          btn.style.top = Math.floor(Math.random() * h) + 'px';
+          msg.textContent = dodges >= 3 ? 'fine. it gave up.' : 'it dodged you (' + dodges + '/3)';
+        });
+        btn.addEventListener('click', function () {
+          if (dodges < 3) { msg.textContent = 'catch it three times first.'; return; }
+          done();
+        });
+      } }
+    ];
+
+    function init_captcha() {
+      capIndex = 0;
+      capStartTime = Date.now();
+      clearInterval(capTimerId);
+      capTimerId = setInterval(function () {
+        var el = document.getElementById('capTimer');
+        if (!el || !capStartTime) return;
+        if (capIndex >= CAPTCHA_ROUNDS.length) return;
+        el.textContent = 'elapsed ' + ((Date.now() - capStartTime) / 1000).toFixed(1) + 's';
+      }, 100);
+      capRender();
+    }
+
+    function capRender() {
+      var stage = document.getElementById('capStage');
+      if (!stage) return;
+      stage.innerHTML = '';
+      if (capIndex >= CAPTCHA_ROUNDS.length) {
+        clearInterval(capTimerId);
+        var secs = ((Date.now() - capStartTime) / 1000).toFixed(1);
+        stage.innerHTML = '<div class="cap-ok">verification complete</div>' +
+          '<div class="cap-prompt">you are human. probably.</div>' +
+          '<div class="cap-title">time ' + secs + 's &nbsp;|&nbsp; id ' + Math.random().toString(36).slice(2, 10).toUpperCase() + '</div>' +
+          '<button class="cap-btn" onclick="init_captcha()">run it again</button>';
+        return;
+      }
+      var head = document.createElement('div');
+      head.className = 'cap-title';
+      head.textContent = 'step ' + (capIndex + 1) + ' of ' + CAPTCHA_ROUNDS.length;
+      var body = document.createElement('div');
+      body.style.width = '100%';
+      body.style.display = 'flex';
+      body.style.flexDirection = 'column';
+      body.style.alignItems = 'center';
+      body.style.gap = '12px';
+      stage.appendChild(head);
+      stage.appendChild(body);
+      var guard = { done: false };
+      CAPTCHA_ROUNDS[capIndex].mount(body, function () {
+        if (guard.done) return;
+        guard.done = true;
+        capIndex++;
+        capRender();
+      });
+    }
+
+    function tasSkipCaptcha() {
+      capIndex = CAPTCHA_ROUNDS.length;
+      capStartTime = Date.now() - 1;
+      capRender();
+      st('st-cap', 'captcha skipped.');
+    }
+
+    /* ===== BLIND STOPWATCH ===== */
+    var swState = 'idle', swT0 = 0;
+
+    function init_stopwatch() { swReset(); }
+
+    function swReset() {
+      swState = 'idle';
+      var dot = document.getElementById('swDot');
+      if (dot) dot.classList.remove('running');
+      document.getElementById('swBtn').textContent = 'start';
+      document.getElementById('swResult').textContent = '';
+      var best = localStorage.getItem('luxfun_sw');
+      document.getElementById('swSub').textContent = 'best: ' + (best ? (parseInt(best, 10) >= 0 ? '+' : '') + best + 'ms' : '—');
+    }
+
+    function swPress() {
+      var dot = document.getElementById('swDot');
+      var res = document.getElementById('swResult');
+      var sub = document.getElementById('swSub');
+      if (swState === 'running') {
+        var d = performance.now() - swT0;
+        swState = 'done';
+        dot.classList.remove('running');
+        document.getElementById('swBtn').textContent = 'go again';
+        var off = Math.round(d - 10000);
+        res.textContent = (d / 1000).toFixed(3) + 's  (' + (off >= 0 ? '+' : '') + off + 'ms)';
+        var best = localStorage.getItem('luxfun_sw');
+        var bestNum = best ? Math.abs(parseInt(best, 10)) : Infinity;
+        if (Math.abs(off) < bestNum) {
+          localStorage.setItem('luxfun_sw', String(off));
+          best = String(off);
+        }
+        sub.textContent = 'best: ' + (best ? (parseInt(best, 10) >= 0 ? '+' : '') + best + 'ms' : '—');
+      } else {
+        swState = 'running';
+        swT0 = performance.now();
+        dot.classList.add('running');
+        document.getElementById('swBtn').textContent = 'stop';
+        res.textContent = '';
+        sub.textContent = 'no peeking.';
+      }
+    }
+
+    /* ===== ODD ONE OUT ===== */
+    var oddRound = 0, oddScore = 0, oddTarget = 0, oddSize = 3;
+
+    function init_odd() { oddRound = 0; oddScore = 0; oddNext(); }
+
+    function oddUpdateHud() {
+      var hud = document.getElementById('oddHud');
+      if (hud) hud.innerHTML = '<span>round ' + Math.min(oddRound + 1, 10) + '/10</span><span>score ' + oddScore + '</span>';
+    }
+
+    function oddNext() {
+      var grid = document.getElementById('oddGrid');
+      if (!grid) return;
+      if (oddRound >= 10) {
+        grid.style.gridTemplateColumns = '1fr';
+        grid.innerHTML = '<div style="text-align:center;font-size:22px">score ' + oddScore + '/10</div>';
+        document.getElementById('oddHud').innerHTML = '<span>done</span><span>' + (oddScore >= 9 ? 'freak' : oddScore >= 6 ? 'decent' : 'average human') + '</span>';
+        return;
+      }
+      oddSize = 3 + Math.floor(oddRound / 2);
+      var n = oddSize * oddSize;
+      var hue = Math.floor(Math.random() * 360);
+      var delta = Math.max(4.5, 26 - oddRound * 2.4);
+      var sat = 55 + Math.random() * 20;
+      var lig = 46 + Math.random() * 12;
+      var base = 'hsl(' + hue + ',' + sat.toFixed(0) + '%,' + lig.toFixed(0) + '%)';
+      var diff = 'hsl(' + hue + ',' + sat.toFixed(0) + '%,' + (lig + delta).toFixed(0) + '%)';
+      oddTarget = Math.floor(Math.random() * n);
+      grid.style.gridTemplateColumns = 'repeat(' + oddSize + ', 34px)';
+      grid.innerHTML = '';
+      for (var i = 0; i < n; i++) {
+        var d = document.createElement('div');
+        d.className = 'odd-tile';
+        d.style.background = i === oddTarget ? diff : base;
+        d.dataset.i = i;
+        d.addEventListener('click', function (e) {
+          if (+e.currentTarget.dataset.i === oddTarget) oddScore++;
+          oddRound++;
+          oddUpdateHud();
+          oddNext();
+        });
+        grid.appendChild(d);
+      }
+      oddUpdateHud();
+    }
+
+    /* ===== COUNT THE DOTS ===== */
+    var dotRound = 0, dotScore = 0, dotActual = 0, dotLock = false;
+
+    function init_dots() {
+      dotRound = 0; dotScore = 0; dotLock = false;
+      var inp = document.getElementById('dotsInput');
+      if (inp) inp.disabled = false;
+      dotsNext();
+    }
+
+    function dotsNext() {
+      var stage = document.getElementById('dotsStage');
+      var hud = document.getElementById('dotsHud');
+      var msg = document.getElementById('dotsMsg');
+      var inp = document.getElementById('dotsInput');
+      if (!stage) return;
+      if (dotRound >= 5) {
+        stage.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:22px">score ' + Math.round(dotScore) + '/500</div>';
+        hud.innerHTML = '<span>done</span>';
+        msg.textContent = '';
+        inp.disabled = true;
+        return;
+      }
+      dotLock = true;
+      inp.disabled = true;
+      inp.value = '';
+      msg.textContent = 'watch...';
+      hud.innerHTML = '<span>round ' + (dotRound + 1) + '/5</span><span>score ' + Math.round(dotScore) + '</span>';
+      dotActual = Math.round(10 * Math.pow(1.9, dotRound));
+      stage.innerHTML = '';
+      var w = stage.clientWidth, h = stage.clientHeight;
+      for (var i = 0; i < dotActual; i++) {
+        var d = document.createElement('div');
+        d.className = 'dots-dot';
+        d.style.left = (Math.random() * (w - 14)) + 'px';
+        d.style.top = (Math.random() * (h - 14)) + 'px';
+        stage.appendChild(d);
+      }
+      setTimeout(function () {
+        stage.innerHTML = '';
+        inp.disabled = false;
+        inp.focus();
+        msg.textContent = 'how many?';
+        dotLock = false;
+      }, 1000);
+    }
+
+    function dotsSubmit() {
+      if (dotLock) return;
+      var inp = document.getElementById('dotsInput');
+      var v = parseInt(inp.value, 10);
+      if (isNaN(v)) return;
+      var acc = Math.max(0, 1 - Math.abs(v - dotActual) / dotActual);
+      dotScore += acc * 100;
+      document.getElementById('dotsMsg').textContent = 'actual ' + dotActual + ' — accuracy ' + Math.round(acc * 100) + '%';
+      dotRound++;
+      dotLock = true;
+      setTimeout(dotsNext, 900);
+    }
+
+    /* ===== PRECISION BAR ===== */
+    var precRound = 0, precHits = 0, precPos = 0, precDir = 1, precSpeed = 0.5, precRaf = 0, precActive = false, precZone = [0.4, 0.6];
+
+    function init_precision() {
+      precRound = 0; precHits = 0; precActive = false; precPos = 0;
+      cancelAnimationFrame(precRaf);
+      document.getElementById('precMsg').textContent = '';
+      precStartRound();
+    }
+
+    function precStartRound() {
+      var _pv = document.getElementById('precision');
+      if (!_pv || !_pv.classList.contains('active')) { precActive = false; return; }
+      if (precRound >= 10) {
+        precActive = false;
+        cancelAnimationFrame(precRaf);
+        document.getElementById('precMsg').textContent = 'hits ' + precHits + '/10';
+        document.getElementById('precHud').innerHTML = '<span>done</span><span>' + (precHits >= 9 ? 'machine' : precHits >= 6 ? 'solid' : 'human') + '</span>';
+        return;
+      }
+      precActive = true;
+      precPos = Math.random() * 0.8;
+      precDir = Math.random() < 0.5 ? 1 : -1;
+      precSpeed = 0.42 + precRound * 0.085;
+      var width = Math.max(0.05, 0.30 - precRound * 0.026);
+      var start = 0.12 + Math.random() * (0.88 - width - 0.12);
+      precZone = [start, start + width];
+      var zone = document.getElementById('precZone');
+      zone.style.left = (start * 100) + '%';
+      zone.style.width = (width * 100) + '%';
+      document.getElementById('precHud').innerHTML = '<span>round ' + (precRound + 1) + '/10</span><span>hits ' + precHits + '</span>';
+      document.getElementById('precMsg').textContent = '';
+      cancelAnimationFrame(precRaf);
+      precLoop();
+    }
+
+    function precLoop() {
+      if (!precActive) return;
+      precPos += precDir * precSpeed * 0.016;
+      if (precPos > 1) { precPos = 1; precDir = -1; }
+      if (precPos < 0) { precPos = 0; precDir = 1; }
+      var head = document.getElementById('precHead');
+      if (head) head.style.left = (precPos * 100) + '%';
+      precRaf = requestAnimationFrame(precLoop);
+    }
+
+    function precStop() {
+      if (!precActive) return;
+      var hit = precPos >= precZone[0] && precPos <= precZone[1];
+      if (hit) precHits++;
+      precActive = false;
+      cancelAnimationFrame(precRaf);
+      document.getElementById('precMsg').textContent = hit ? 'hit.' : 'miss.';
+      precRound++;
+      setTimeout(precStartRound, 520);
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== ' ') return;
+      var v = document.getElementById('precision');
+      var ae = document.activeElement;
+      if (v && v.classList.contains('active') && ae && ae.tagName !== 'INPUT') {
+        e.preventDefault();
+        precStop();
+      }
+    });
   </script>
 </body>
 </html>
