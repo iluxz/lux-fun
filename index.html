@@ -14,6 +14,8 @@
       --text: #e8e6f2;
       --muted: #7a7a8c;
       --border: rgba(124, 92, 255, 0.3);
+      --green: #50c878;
+      --red: #c85050;
     }
     body {
       background: var(--bg);
@@ -28,6 +30,11 @@
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(10, 10, 18, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 10;
     }
     h1 {
       font-size: 28px;
@@ -38,21 +45,17 @@
       background-clip: text;
     }
     .tagline { color: var(--muted); font-size: 12px; letter-spacing: 2px; }
-    .hub {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 40px;
-    }
+    .hub { max-width: 1200px; margin: 40px auto; padding: 0 40px; }
     .game-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
     }
     .game-card {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px;
+      padding: 20px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
@@ -61,14 +64,10 @@
       transform: translateY(-4px);
       box-shadow: 0 8px 32px rgba(124, 92, 255, 0.2);
     }
-    .game-card h3 { font-size: 18px; margin-bottom: 8px; }
-    .game-card p { color: var(--muted); font-size: 13px; line-height: 1.5; }
-    .game-view {
-      display: none;
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 40px;
-    }
+    .game-card h3 { font-size: 16px; margin-bottom: 6px; }
+    .game-card p { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .game-card .badge { display: inline-block; font-size: 9px; padding: 2px 6px; border-radius: 3px; background: rgba(124,92,255,0.2); color: var(--accent); margin-bottom: 8px; letter-spacing: 1px; }
+    .game-view { display: none; max-width: 900px; margin: 40px auto; padding: 0 40px; }
     .game-view.active { display: block; }
     .hub.active { display: block; }
     .hub.hidden { display: none; }
@@ -93,6 +92,7 @@
       border-radius: 8px;
       color: var(--text);
       margin: 12px 0;
+      font-family: monospace;
     }
     .rule {
       padding: 8px 12px;
@@ -100,10 +100,15 @@
       border-radius: 6px;
       font-size: 13px;
       transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .rule.pass { background: rgba(80, 200, 120, 0.1); border-left: 3px solid #50c878; }
-    .rule.fail { background: rgba(200, 80, 80, 0.1); border-left: 3px solid #c85050; }
+    .rule.pass { background: rgba(80, 200, 120, 0.08); border-left: 3px solid #50c878; }
+    .rule.fail { background: rgba(200, 80, 80, 0.08); border-left: 3px solid #c85050; }
+    .rule .icon { font-size: 14px; }
     .win { color: #50c878; font-size: 20px; margin-top: 20px; text-align: center; }
+    .progress { text-align: center; color: var(--muted); margin: 8px 0; font-size: 12px; }
     /* Spend game */
     .spend-grid {
       display: grid;
@@ -129,7 +134,7 @@
       cursor: pointer;
     }
     .budget { font-size: 24px; text-align: center; margin: 20px 0; }
-    /* Size comparison */
+    /* Scale game */
     .size-bar {
       height: 40px;
       background: rgba(255,255,255,0.05);
@@ -148,6 +153,87 @@
     .size-controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
     .size-controls button { background: rgba(124,92,255,0.1); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 4px; cursor: pointer; }
     .size-controls button:hover { background: rgba(124,92,255,0.2); }
+    /* Clicker */
+    .clicker-area { text-align: center; margin: 40px 0; }
+    .clicker-cube {
+      width: 120px; height: 120px; margin: 0 auto;
+      background: linear-gradient(135deg, #7c5cff, #ff5a8a);
+      border-radius: 12px; cursor: pointer;
+      box-shadow: 0 0 40px rgba(124,92,255,0.4);
+      transition: transform 0.1s;
+    }
+    .clicker-score { margin-top: 20px; font-size: 24px; }
+    .clicker-mult { margin-top: 8px; color: var(--muted); font-size: 12px; }
+    .clicker-upgrades { margin-top: 20px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .clicker-upgrades button { background: rgba(124,92,255,0.1); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+    /* Reaction game */
+    .reaction-box {
+      width: 100%; height: 200px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+      margin: 20px 0;
+    }
+    .reaction-box.waiting { background: rgba(200, 80, 80, 0.2); }
+    .reaction-box.ready { background: rgba(80, 200, 120, 0.3); }
+    .reaction-box.too-early { background: rgba(200, 200, 80, 0.2); }
+    .reaction-result { text-align: center; font-size: 18px; margin: 12px 0; }
+    /* Memory game */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+    .memory-card {
+      aspect-ratio: 1;
+      background: rgba(124,92,255,0.1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .memory-card.flipped { background: rgba(124,92,255,0.3); }
+    .memory-card.matched { background: rgba(80,200,120,0.2); border-color: #50c878; }
+    /* Typing test */
+    .typing-area {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      font-size: 18px;
+      line-height: 1.8;
+      margin: 20px 0;
+      min-height: 120px;
+    }
+    .typing-area .correct { color: #50c878; }
+    .typing-area .wrong { color: #c85050; text-decoration: underline; }
+    .typing-area .pending { color: var(--muted); }
+    .typing-stats { display: flex; gap: 20px; justify-content: center; margin: 12px 0; font-size: 14px; }
+    /* Number guess */
+    .guess-input {
+      width: 100%; padding: 12px; font-size: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); margin: 12px 0; text-align: center;
+    }
+    .guess-history { margin: 12px 0; font-size: 13px; }
+    .guess-history div { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    /* Color guess */
+    .color-display {
+      width: 100%; height: 120px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+    }
+    .color-options { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
+    .color-options button { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; }
+    .color-options button:hover { background: rgba(124,92,255,0.2); }
   </style>
 </head>
 <body>
@@ -159,20 +245,49 @@
   <div class="hub active" id="hub">
     <div class="game-grid">
       <div class="game-card" onclick="showGame('password')">
+        <span class="badge">HARD</span>
         <h3>The Password Game</h3>
-        <p>Create a password that satisfies increasingly absurd rules. Can you make it past rule 20?</p>
+        <p>Create a password satisfying 20 increasingly absurd rules. Good luck.</p>
       </div>
       <div class="game-card" onclick="showGame('spend')">
+        <span class="badge">FUN</span>
         <h3>Spend Lux's Credits</h3>
-        <p>You have 1,000,000 credits. Buy as much as you can. Go broke.</p>
+        <p>1,000,000 credits. Buy everything you can. Go broke.</p>
       </div>
       <div class="game-card" onclick="showGame('scale')">
+        <span class="badge">MIND-BENDING</span>
         <h3>Scale of Things</h3>
-        <p>Compare the size of everyday objects to cosmic ones. Mind-bending.</p>
+        <p>Compare sizes from an ant to the observable universe.</p>
       </div>
       <div class="game-card" onclick="showGame('clicker')">
+        <span class="badge">IDLE</span>
         <h3>Void Clicker</h3>
         <p>Click the cube. Earn points. Buy upgrades. The void watches.</p>
+      </div>
+      <div class="game-card" onclick="showGame('reaction')">
+        <span class="badge">REFLEX</span>
+        <h3>Reaction Time</h3>
+        <p>Wait for green, then click as fast as you can. 5 rounds.</p>
+      </div>
+      <div class="game-card" onclick="showGame('memory')">
+        <span class="badge">MEMORY</span>
+        <h3>Memory Match</h3>
+        <p>Flip cards and find matching pairs. 8 pairs, 16 cards.</p>
+      </div>
+      <div class="game-card" onclick="showGame('typing')">
+        <span class="badge">SPEED</span>
+        <h3>Typing Test</h3>
+        <p>Type the passage as fast and accurately as you can. WPM + accuracy.</p>
+      </div>
+      <div class="game-card" onclick="showGame('guess')">
+        <span class="badge">LOGIC</span>
+        <h3>Number Guess</h3>
+        <p>Guess a number between 1 and 100. 7 tries. Hot or cold?</p>
+      </div>
+      <div class="game-card" onclick="showGame('color')">
+        <span class="badge">PERCEPTION</span>
+        <h3>Color Guess</h3>
+        <p>Which hex code matches the color shown? 10 rounds.</p>
       </div>
     </div>
   </div>
@@ -181,8 +296,9 @@
   <div class="game-view" id="password">
     <button class="back-btn" onclick="showHub()">← Back</button>
     <h2>The Password Game</h2>
-    <p style="color:var(--muted);margin:8px 0">Your password must satisfy all rules below.</p>
+    <p style="color:var(--muted);margin:8px 0">Your password must satisfy all rules below. Rules unlock as you pass previous ones.</p>
     <input type="text" id="pwInput" placeholder="type your password..." oninput="checkPassword()">
+    <div class="progress" id="pwProgress"></div>
     <div id="pwRules"></div>
     <div class="win" id="pwWin"></div>
   </div>
@@ -193,29 +309,82 @@
     <h2>Spend Lux's Credits</h2>
     <div class="budget" id="spendBudget">1,000,000 CR</div>
     <div class="spend-grid" id="spendGrid"></div>
-    <div id="spendResult"></div>
+    <div id="spendResult" style="text-align:center;color:var(--muted)"></div>
   </div>
 
   <!-- Scale Game -->
   <div class="game-view" id="scale">
     <button class="back-btn" onclick="showHub()">← Back</button>
     <h2>Scale of Things</h2>
-    <p style="color:var(--muted);margin:8px 0">Select an object to see how it compares.</p>
+    <p style="color:var(--muted);margin:8px 0">Select an object to see how it compares to everything else.</p>
     <div class="size-controls" id="sizeControls"></div>
     <div class="size-bar"><div class="size-fill" id="sizeFill" style="width:0%"></div><div class="size-label" id="sizeLabel"></div></div>
-    <div id="sizeInfo" style="color:var(--muted);font-size:13px;margin-top:12px"></div>
+    <div id="sizeInfo" style="color:var(--muted);font-size:13px;margin-top:12px;text-align:center"></div>
   </div>
 
   <!-- Clicker Game -->
   <div class="game-view" id="clicker">
     <button class="back-btn" onclick="showHub()">← Back</button>
     <h2>Void Clicker</h2>
-    <div style="text-align:center;margin:40px 0">
-      <div id="clickerCube" style="width:120px;height:120px;margin:0 auto;background:linear-gradient(135deg,#7c5cff,#ff5a8a);border-radius:12px;cursor:pointer;box-shadow:0 0 40px rgba(124,92,255,0.4);transition:transform 0.1s" onclick="clickCube()"></div>
-      <div style="margin-top:20px;font-size:24px" id="clickerScore">0 points</div>
-      <div style="margin-top:8px;color:var(--muted);font-size:12px" id="clickerMult">1x multiplier</div>
-      <div style="margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap" id="clickerUpgrades"></div>
+    <div class="clicker-area">
+      <div class="clicker-cube" id="clickerCube" onclick="clickCube()"></div>
+      <div class="clicker-score" id="clickerScore">0 points</div>
+      <div class="clicker-mult" id="clickerMult">1x multiplier</div>
+      <div class="clicker-upgrades" id="clickerUpgrades"></div>
     </div>
+  </div>
+
+  <!-- Reaction Game -->
+  <div class="game-view" id="reaction">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Reaction Time</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Wait for green, then click as fast as you can. 5 rounds.</p>
+    <div class="reaction-box waiting" id="reactionBox" onclick="reactionClick()">Click to start</div>
+    <div class="reaction-result" id="reactionResult"></div>
+    <div style="text-align:center;color:var(--muted);font-size:12px" id="reactionHistory"></div>
+  </div>
+
+  <!-- Memory Game -->
+  <div class="game-view" id="memory">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Memory Match</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Find all 8 matching pairs.</p>
+    <div style="text-align:center;margin:8px 0" id="memoryStatus">pairs: 0/8</div>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <button class="back-btn" onclick="initMemory()" style="margin-top:12px">Restart</button>
+  </div>
+
+  <!-- Typing Test -->
+  <div class="game-view" id="typing">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Typing Test</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Type the passage below. Timer starts on first keystroke.</p>
+    <div class="typing-area" id="typingArea"></div>
+    <input type="text" id="typingInput" style="width:100%;padding:12px;font-size:16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--text)" oninput="checkTyping()" placeholder="start typing here...">
+    <div class="typing-stats" id="typingStats"></div>
+  </div>
+
+  <!-- Number Guess -->
+  <div class="game-view" id="guess">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Number Guess</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">I'm thinking of a number between 1 and 100. You have 7 tries.</p>
+    <input type="number" class="guess-input" id="guessInput" min="1" max="100" placeholder="your guess">
+    <button class="back-btn" onclick="makeGuess()" style="width:100%;margin-top:0">Guess</button>
+    <div class="guess-history" id="guessHistory"></div>
+    <div style="text-align:center;margin-top:12px" id="guessStatus"></div>
+    <button class="back-btn" onclick="initGuess()" style="margin-top:12px">New Game</button>
+  </div>
+
+  <!-- Color Guess -->
+  <div class="game-view" id="color">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Color Guess</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Which hex code matches the color? 10 rounds.</p>
+    <div class="color-display" id="colorDisplay"></div>
+    <div class="color-options" id="colorOptions"></div>
+    <div style="text-align:center;margin-top:12px;font-size:14px" id="colorScore">score: 0/0</div>
+    <button class="back-btn" onclick="initColor()" style="margin-top:12px">New Game</button>
   </div>
 
   <script>
@@ -232,58 +401,71 @@
       document.getElementById('hub').classList.add('active');
     }
 
-    // Password Game
+    // ===== PASSWORD GAME =====
     const pwRules = [
-      { text: "Your password must be at least 5 characters long", check: p => p.length >= 5 },
-      { text: "Your password must contain a number", check: p => /[0-9]/.test(p) },
-      { text: "Your password must contain an uppercase letter", check: p => /[A-Z]/.test(p) },
-      { text: "Your password must contain a special character", check: p => /[!@#$%^&*]/.test(p) },
-      { text: "The digits in your password must add up to 25", check: p => (p.match(/\d/g)||[]).reduce((a,b)=>a+parseInt(b),0) === 25 },
-      { text: "Your password must contain the word 'lux'", check: p => /lux/i.test(p) },
-      { text: "Your password must contain a roman numeral", check: p => /IV|IX|XL|XC|CD|CM|V|X|L|C|D|M/.test(p) },
-      { text: "Your password must contain an emoji", check: p => /[\u{1F300}-\u{1F9FF}]/u.test(p) },
-      { text: "Your password must be at least 12 characters long", check: p => p.length >= 12 },
-      { text: "Your password must contain a prime number", check: p => /2|3|5|7|11|13|17|19|23|29|31|37|41|43|47/.test(p) },
-      { text: "Your password must contain the current month", check: p => new RegExp(new Date().toLocaleString('en',{month:'long'}), 'i').test(p) },
-      { text: "Your password must contain 'void'", check: p => /void/i.test(p) },
-      { text: "Your password must contain a color", check: p => /red|blue|green|yellow|purple|orange|pink|cyan|magenta/i.test(p) },
-      { text: "Your password must contain a number greater than 100", check: p => /\d{3,}/.test(p) },
-      { text: "Your password must contain 'cube'", check: p => /cube/i.test(p) },
-      { text: "Your password must contain a vowel repeated 3 times", check: p => /aaa|eee|iii|ooo|uuu/i.test(p) },
-      { text: "Your password must contain 'rng'", check: p => /rng/i.test(p) },
-      { text: "Your password must contain the day of the week", check: p => new RegExp(new Date().toLocaleString('en',{weekday:'long'}), 'i').test(p) },
-      { text: "Your password must be at least 20 characters long", check: p => p.length >= 20 },
-      { text: "Your password must contain 'lux.fun'", check: p => /lux\.fun/i.test(p) },
+      { text: "at least 5 characters", check: p => p.length >= 5 },
+      { text: "contains a number", check: p => /[0-9]/.test(p) },
+      { text: "contains uppercase", check: p => /[A-Z]/.test(p) },
+      { text: "contains special char (!@#$%^&*)", check: p => /[!@#$%^&*]/.test(p) },
+      { text: "digits sum to 25", check: p => (p.match(/\d/g)||[]).reduce((a,b)=>a+parseInt(b),0) === 25 },
+      { text: "contains 'lux'", check: p => /lux/i.test(p) },
+      { text: "contains a roman numeral", check: p => /IV|IX|XL|XC|CD|CM|\bV\b|\bX\b|\bL\b|\bC\b|\bD\b|\bM\b/.test(p) },
+      { text: "contains an emoji", check: p => /[\u{1F300}-\u{1F9FF}]/u.test(p) },
+      { text: "at least 12 characters", check: p => p.length >= 12 },
+      { text: "contains a prime number", check: p => /2|3|5|7|11|13|17|19|23|29|31|37|41|43|47/.test(p) },
+      { text: "contains current month", check: p => new RegExp(new Date().toLocaleString('en',{month:'long'}), 'i').test(p) },
+      { text: "contains 'void'", check: p => /void/i.test(p) },
+      { text: "contains a color name", check: p => /red|blue|green|yellow|purple|orange|pink|cyan|magenta|black|white/i.test(p) },
+      { text: "contains a 3+ digit number", check: p => /\d{3,}/.test(p) },
+      { text: "contains 'cube'", check: p => /cube/i.test(p) },
+      { text: "contains a vowel repeated 3x", check: p => /aaa|eee|iii|ooo|uuu/i.test(p) },
+      { text: "contains 'rng'", check: p => /rng/i.test(p) },
+      { text: "contains day of week", check: p => new RegExp(new Date().toLocaleString('en',{weekday:'long'}), 'i').test(p) },
+      { text: "at least 20 characters", check: p => p.length >= 20 },
+      { text: "contains 'lux.fun'", check: p => /lux\.fun/i.test(p) },
+      { text: "contains 'objbox'", check: p => /objbox/i.test(p) },
+      { text: "contains a number divisible by 7", check: p => { const nums = p.match(/\d+/g); return nums && nums.some(n => parseInt(n) % 7 === 0 && parseInt(n) > 0); } },
+      { text: "contains 'haydee'", check: p => /haydee/i.test(p) },
+      { text: "contains 'neal'", check: p => /neal/i.test(p) },
+      { text: "contains 'sol'", check: p => /sol/i.test(p) },
+      { text: "password length is a prime number", check: p => { const n = p.length; if (n < 2) return false; for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false; return true; } },
+      { text: "contains 'fishing'", check: p => /fishing/i.test(p) },
+      { text: "contains 'laboratory'", check: p => /laboratory/i.test(p) },
+      { text: "contains 'transcend'", check: p => /transcend/i.test(p) },
+      { text: "contains 'prestige'", check: p => /prestige/i.test(p) },
     ];
     let pwRuleCount = 5;
     function checkPassword() {
       const p = document.getElementById('pwInput').value;
       const rulesEl = document.getElementById('pwRules');
       const winEl = document.getElementById('pwWin');
+      const progEl = document.getElementById('pwProgress');
       rulesEl.innerHTML = '';
       let allPass = true;
-      for (let i = 0; i < Math.min(pwRuleCount, pwRules.length); i++) {
+      const count = Math.min(pwRuleCount, pwRules.length);
+      for (let i = 0; i < count; i++) {
         const rule = pwRules[i];
         const passed = rule.check(p);
         if (!passed) allPass = false;
         const div = document.createElement('div');
         div.className = 'rule ' + (passed ? 'pass' : 'fail');
-        div.textContent = (passed ? '✓ ' : '✗ ') + rule.text;
+        div.innerHTML = '<span class="icon">' + (passed ? '✓' : '✗') + '</span> ' + rule.text;
         rulesEl.appendChild(div);
       }
+      progEl.textContent = 'rules: ' + count + '/' + pwRules.length;
       if (allPass && pwRuleCount < pwRules.length) {
         pwRuleCount++;
         checkPassword();
       }
       if (allPass && pwRuleCount >= pwRules.length) {
-        winEl.textContent = '🎉 you beat the password game!';
+        winEl.textContent = '🎉 you beat the password game! (' + p.length + ' chars)';
       } else {
         winEl.textContent = '';
       }
     }
     checkPassword();
 
-    // Spend Game
+    // ===== SPEND GAME =====
     const spendItems = [
       { name: 'Coffee', price: 5 },
       { name: 'Rubber Duck', price: 12 },
@@ -301,6 +483,10 @@
       { name: 'House', price: 350000 },
       { name: 'Private Island', price: 5000000 },
       { name: 'SpaceX Ticket', price: 55000000 },
+      { name: 'Small Country', price: 500000000 },
+      { name: 'Luxury Yacht', price: 12000000 },
+      { name: 'Sports Team', price: 2000000000 },
+      { name: 'Skyscraper', price: 800000000 },
     ];
     let budget = 1000000;
     let spent = 0;
@@ -329,7 +515,7 @@
     }
     renderSpend();
 
-    // Scale Game
+    // ===== SCALE GAME =====
     const scaleItems = [
       { name: 'Ant', size: 0.005, info: 'Ants can lift 50x their body weight.' },
       { name: 'Coin', size: 0.025, info: 'A standard coin is about 2.5cm across.' },
@@ -363,7 +549,7 @@
     }
     renderScale();
 
-    // Void Clicker
+    // ===== VOID CLICKER =====
     let clickerScore = 0;
     let clickerMult = 1;
     let clickerUpgrades = [
@@ -371,6 +557,8 @@
       { name: 'Triple Click', cost: 50, mult: 3, bought: false },
       { name: 'Auto Clicker', cost: 100, mult: 0, bought: false, auto: true },
       { name: 'Void Boost', cost: 500, mult: 5, bought: false },
+      { name: 'Mega Click', cost: 2000, mult: 10, bought: false },
+      { name: 'Void Overdrive', cost: 10000, mult: 50, bought: false },
     ];
     function clickCube() {
       clickerScore += clickerMult;
@@ -403,7 +591,6 @@
       });
     }
     renderClickerUpgrades();
-    // auto-clicker tick
     setInterval(() => {
       clickerUpgrades.forEach(u => {
         if (u.bought && u.auto) {
@@ -412,6 +599,239 @@
         }
       });
     }, 1000);
+
+    // ===== REACTION TIME =====
+    let reactionState = 'idle';
+    let reactionStart = 0;
+    let reactionTimes = [];
+    function reactionClick() {
+      const box = document.getElementById('reactionBox');
+      const result = document.getElementById('reactionResult');
+      const history = document.getElementById('reactionHistory');
+      if (reactionState === 'idle') {
+        reactionState = 'waiting';
+        box.className = 'reaction-box waiting';
+        box.textContent = 'wait for green...';
+        result.textContent = '';
+        const delay = 1000 + Math.random() * 3000;
+        setTimeout(() => {
+          if (reactionState === 'waiting') {
+            reactionState = 'ready';
+            box.className = 'reaction-box ready';
+            box.textContent = 'CLICK NOW!';
+            reactionStart = Date.now();
+          }
+        }, delay);
+      } else if (reactionState === 'waiting') {
+        reactionState = 'idle';
+        box.className = 'reaction-box too-early';
+        box.textContent = 'too early! click to try again';
+        result.textContent = 'too early!';
+      } else if (reactionState === 'ready') {
+        const time = Date.now() - reactionStart;
+        reactionTimes.push(time);
+        reactionState = 'idle';
+        box.className = 'reaction-box waiting';
+        box.textContent = 'click to start';
+        result.textContent = time + ' ms';
+        if (reactionTimes.length >= 5) {
+          const avg = Math.round(reactionTimes.reduce((a,b)=>a+b,0) / reactionTimes.length);
+          const best = Math.min(...reactionTimes);
+          result.textContent = 'done! avg: ' + avg + 'ms, best: ' + best + 'ms';
+          history.textContent = 'times: ' + reactionTimes.join(', ') + ' ms';
+        } else {
+          history.textContent = 'round ' + (reactionTimes.length + 1) + '/5';
+        }
+      }
+    }
+
+    // ===== MEMORY MATCH =====
+    const memoryEmojis = ['🎮','🎯','🎲','🎨','🎭','🎪','🎬','🎤'];
+    let memoryCards = [];
+    let memoryFlipped = [];
+    let memoryMatched = 0;
+    let memoryLock = false;
+    function initMemory() {
+      memoryCards = [];
+      memoryFlipped = [];
+      memoryMatched = 0;
+      memoryLock = false;
+      const pairs = [...memoryEmojis, ...memoryEmojis];
+      for (let i = pairs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+      }
+      memoryCards = pairs;
+      const grid = document.getElementById('memoryGrid');
+      grid.innerHTML = '';
+      memoryCards.forEach((emoji, i) => {
+        const card = document.createElement('div');
+        card.className = 'memory-card';
+        card.dataset.index = i;
+        card.onclick = () => flipMemory(i);
+        grid.appendChild(card);
+      });
+      document.getElementById('memoryStatus').textContent = 'pairs: 0/8';
+    }
+    function flipMemory(i) {
+      if (memoryLock) return;
+      const cards = document.querySelectorAll('.memory-card');
+      if (cards[i].classList.contains('flipped') || cards[i].classList.contains('matched')) return;
+      cards[i].classList.add('flipped');
+      cards[i].textContent = memoryCards[i];
+      memoryFlipped.push(i);
+      if (memoryFlipped.length === 2) {
+        memoryLock = true;
+        const [a, b] = memoryFlipped;
+        if (memoryCards[a] === memoryCards[b]) {
+          cards[a].classList.add('matched');
+          cards[b].classList.add('matched');
+          memoryMatched++;
+          document.getElementById('memoryStatus').textContent = 'pairs: ' + memoryMatched + '/8';
+          memoryFlipped = [];
+          memoryLock = false;
+          if (memoryMatched === 8) {
+            document.getElementById('memoryStatus').textContent = '🎉 you win!';
+          }
+        } else {
+          setTimeout(() => {
+            cards[a].classList.remove('flipped');
+            cards[b].classList.remove('flipped');
+            cards[a].textContent = '';
+            cards[b].textContent = '';
+            memoryFlipped = [];
+            memoryLock = false;
+          }, 800);
+        }
+      }
+    }
+    initMemory();
+
+    // ===== TYPING TEST =====
+    const typingPassages = [
+      "The quick brown fox jumps over the lazy dog. Programming is the art of telling another human what one wants the computer to do. Code is like humor. When you have to explain it, it's bad.",
+      "In the beginning there was the command line. Then came the graphical user interface, and with it, a thousand buttons. Each button promised simplicity. Each button delivered complexity. Such is the way of software.",
+      "To be or not to be, that is the question. Whether tis nobler in the mind to suffer the slings and arrows of outrageous fortune, or to take arms against a sea of troubles, and by opposing end them.",
+    ];
+    let typingStart = null;
+    let typingDone = false;
+    function initTyping() {
+      const passage = typingPassages[Math.floor(Math.random() * typingPassages.length)];
+      document.getElementById('typingArea').textContent = passage;
+      document.getElementById('typingInput').value = '';
+      document.getElementById('typingStats').textContent = '';
+      typingStart = null;
+      typingDone = false;
+    }
+    function checkTyping() {
+      const input = document.getElementById('typingInput').value;
+      const passage = document.getElementById('typingArea').textContent;
+      if (!typingStart && input.length > 0) typingStart = Date.now();
+      if (typingDone) return;
+      if (input === passage) {
+        typingDone = true;
+        const elapsed = (Date.now() - typingStart) / 1000;
+        const words = passage.split(' ').length;
+        const wpm = Math.round(words / (elapsed / 60));
+        const accuracy = 100;
+        document.getElementById('typingStats').textContent = 'WPM: ' + wpm + ' | time: ' + elapsed.toFixed(1) + 's | accuracy: ' + accuracy + '%';
+      }
+    }
+    initTyping();
+
+    // ===== NUMBER GUESS =====
+    let secretNumber = 0;
+    let guessCount = 0;
+    const MAX_GUESSES = 7;
+    function initGuess() {
+      secretNumber = Math.floor(Math.random() * 100) + 1;
+      guessCount = 0;
+      document.getElementById('guessHistory').innerHTML = '';
+      document.getElementById('guessStatus').textContent = '';
+      document.getElementById('guessInput').value = '';
+    }
+    function makeGuess() {
+      const input = document.getElementById('guessInput');
+      const guess = parseInt(input.value);
+      if (isNaN(guess) || guess < 1 || guess > 100) {
+        document.getElementById('guessStatus').textContent = 'enter a number 1-100';
+        return;
+      }
+      guessCount++;
+      const history = document.getElementById('guessHistory');
+      const div = document.createElement('div');
+      if (guess === secretNumber) {
+        div.textContent = 'guess ' + guessCount + ': ' + guess + ' — correct! 🎉';
+        div.style.color = '#50c878';
+        document.getElementById('guessStatus').textContent = 'you win in ' + guessCount + ' tries!';
+        input.disabled = true;
+      } else if (guessCount >= MAX_GUESSES) {
+        div.textContent = 'guess ' + guessCount + ': ' + guess + ' — ' + (guess < secretNumber ? 'too low' : 'too high') + '. game over! answer was ' + secretNumber;
+        div.style.color = '#c85050';
+        document.getElementById('guessStatus').textContent = 'game over! the number was ' + secretNumber;
+        input.disabled = true;
+      } else {
+        const hint = guess < secretNumber ? 'too low' : 'too high';
+        div.textContent = 'guess ' + guessCount + ': ' + guess + ' — ' + hint + ' (' + (MAX_GUESSES - guessCount) + ' tries left)';
+        div.style.color = guess < secretNumber ? '#5a9eff' : '#ff9e5a';
+        document.getElementById('guessStatus').textContent = hint + ' — ' + (MAX_GUESSES - guessCount) + ' tries left';
+      }
+      history.appendChild(div);
+      input.value = '';
+    }
+    initGuess();
+
+    // ===== COLOR GUESS =====
+    let colorScore = { correct: 0, total: 0 };
+    let currentColor = '';
+    const colorNames = {
+      '#ff0000': 'red', '#00ff00': 'green', '#0000ff': 'blue',
+      '#ffff00': 'yellow', '#ff00ff': 'magenta', '#00ffff': 'cyan',
+      '#ff8000': 'orange', '#8000ff': 'purple', '#ff0080': 'pink',
+      '#80ff00': 'lime', '#0080ff': 'azure', '#ff8080': 'salmon',
+    };
+    function initColor() {
+      colorScore = { correct: 0, total: 0 };
+      document.getElementById('colorScore').textContent = 'score: 0/0';
+      nextColor();
+    }
+    function nextColor() {
+      const keys = Object.keys(colorNames);
+      currentColor = keys[Math.floor(Math.random() * keys.length)];
+      document.getElementById('colorDisplay').style.background = currentColor;
+      const options = document.getElementById('colorOptions');
+      options.innerHTML = '';
+      // 4 options: correct + 3 random
+      const opts = [currentColor];
+      while (opts.length < 4) {
+        const r = keys[Math.floor(Math.random() * keys.length)];
+        if (!opts.includes(r)) opts.push(r);
+      }
+      for (let i = opts.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [opts[i], opts[j]] = [opts[j], opts[i]];
+      }
+      opts.forEach(hex => {
+        const btn = document.createElement('button');
+        btn.textContent = colorNames[hex];
+        btn.onclick = () => {
+          colorScore.total++;
+          if (hex === currentColor) {
+            colorScore.correct++;
+            btn.style.background = 'rgba(80,200,120,0.3)';
+          } else {
+            btn.style.background = 'rgba(200,80,80,0.3)';
+          }
+          document.getElementById('colorScore').textContent = 'score: ' + colorScore.correct + '/' + colorScore.total;
+          setTimeout(nextColor, 800);
+        };
+        options.appendChild(btn);
+      });
+    }
+    initColor();
+
+    // allow enter key for guess
+    document.getElementById('guessInput').addEventListener('keydown', e => { if (e.key === 'Enter') makeGuess(); });
   </script>
 </body>
 </html>
