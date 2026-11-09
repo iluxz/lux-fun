@@ -299,6 +299,50 @@
     }
 
 
+    /* CAPTCHA2-CSS-MARKER */
+    /* captcha round extras */
+    .cap-tiles.four, .cap-tiles.three { display: grid; gap: 6px; width: 100%; }
+    .cap-tiles.four { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 226px; }
+    .cap-tiles.three { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 168px; }
+    .cap-tile.sm { width: auto; height: auto; aspect-ratio: 1 / 1; font-size: 17px; padding: 0; }
+    .cap-code {
+      font-family: ui-monospace, monospace; font-size: 26px; letter-spacing: 6px;
+      padding: 8px 16px; border-radius: 8px; background: rgba(124,92,255,0.12);
+      border: 1px dashed rgba(124,92,255,0.5); color: #d8d2ff;
+      text-decoration: line-through; text-decoration-color: rgba(255,90,138,0.7);
+      animation: capwobble 2.2s infinite ease-in-out; display: inline-block;
+    }
+    @keyframes capwobble {
+      0%, 100% { transform: rotate(-2.5deg) skewX(-6deg) translateY(0); }
+      25% { transform: rotate(1.5deg) skewX(4deg) translateY(-2px); }
+      50% { transform: rotate(-1deg) skewX(-2deg) translateY(1px); }
+      75% { transform: rotate(2.5deg) skewX(7deg) translateY(-1px); }
+    }
+    .cap-pad {
+      display: flex; align-items: center; justify-content: center;
+      width: 200px; height: 110px; border-radius: 12px; cursor: pointer;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+      font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+      transition: background 0.08s, color 0.08s, border-color 0.08s;
+      user-select: none;
+    }
+    .cap-pad.go {
+      background: rgba(80,200,120,0.28); border-color: #50c878; color: #d6ffe4;
+      box-shadow: 0 0 26px rgba(80,200,120,0.45);
+    }
+    .cap-slider { width: 260px; max-width: 100%; accent-color: #7c5cff; }
+    .cap-find {
+      width: 240px; max-width: 100%; height: 110px; border-radius: 10px; border: 1px dashed var(--border);
+      background: rgba(255,255,255,0.02); position: relative; display: flex;
+      align-items: center; justify-content: center; cursor: crosshair;
+    }
+    .cap-findbtn {
+      opacity: 0; border: 1px solid var(--accent); background: rgba(124,92,255,0.3);
+      color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 11px;
+      cursor: pointer; transition: opacity 0.08s;
+    }
+    .cap-findbtn:hover, .cap-findbtn:focus { opacity: 1; }
+    .cap-find:hover .cap-findbtn { opacity: 1; }
     /* FLING-CSS-MARKER */
     /* fling the cube */
     .fl-hud {
@@ -534,7 +578,7 @@
       <div class="game-card" onclick="showGame('captcha')">
         <span class="badge">HUMANITY</span>
         <h3>Definitely Not A Robot</h3>
-        <p>Eight captcha challenges that get progressively less reasonable. Prove you're human.</p>
+        <p>Fourteen captcha challenges that get progressively less reasonable. Prove you're human.</p>
       </div>
       <div class="game-card" onclick="showGame('stopwatch')">
         <span class="badge">TIMING</span>
@@ -750,7 +794,7 @@
   <div class="game-view" id="captcha">
     <button class="back-btn" onclick="showHub()">← Back</button>
     <h2>Definitely Not A Robot</h2>
-    <p style="color:var(--muted);margin:8px 0">Complete all eight verification steps. They get worse.</p>
+    <p style="color:var(--muted);margin:8px 0">Complete all fourteen verification steps. They get worse.</p>
     <div class="cap-stage" id="capStage"></div>
     <div class="cap-timer" id="capTimer"></div>
   </div>
@@ -2269,6 +2313,151 @@
           });
           ch.appendChild(b);
         });
+      } },
+      /* CAPTCHA2-JS-MARKER */
+      { mount: function (el, done) {
+        var decoys = ['\uD83C\uDF55', '\uD83D\uDE97', '\uD83D\uDC15', '\uD83C\uDF3F', '\uD83C\uDFB8', '\uD83D\uDD25', '\uD83E\uDE84', '\uD83D\uDC22', '\uD83C\uDF08'];
+        var n = 2 + Math.floor(Math.random() * 2);
+        var arr = [], i;
+        for (i = 0; i < n; i++) arr.push('\uD83D\uDEA6');
+        var j = 0;
+        while (arr.length < 16) { arr.push(decoys[j % decoys.length]); j++; }
+        for (i = arr.length - 1; i > 0; i--) { var m = Math.floor(Math.random() * (i + 1)); var t = arr[i]; arr[i] = arr[m]; arr[m] = t; }
+        el.innerHTML = '<div class="cap-prompt">select all squares with a traffic light</div><div class="cap-tiles four" id="capT4"></div><div class="cap-title" id="capT4Msg"></div><button class="cap-btn" id="capT4v">verify</button>';
+        var grid = el.querySelector('#capT4');
+        arr.forEach(function (sym) {
+          var d = document.createElement('div');
+          d.className = 'cap-tile sm';
+          d.textContent = sym;
+          d.dataset.hit = sym === '\uD83D\uDEA6' ? '1' : '0';
+          d.addEventListener('click', function () { d.classList.toggle('sel'); });
+          grid.appendChild(d);
+        });
+        el.querySelector('#capT4v').addEventListener('click', function () {
+          var ok = true;
+          el.querySelectorAll('.cap-tile.sm').forEach(function (d) {
+            if (d.classList.contains('sel') !== (d.dataset.hit === '1')) ok = false;
+          });
+          var msg = el.querySelector('#capT4Msg');
+          if (ok) { msg.textContent = 'correct.'; setTimeout(done, 300); }
+          else msg.textContent = 'not those. look again.';
+        });
+      } },
+      { mount: function (el, done) {
+        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        var code = '', i;
+        for (i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+        el.innerHTML = '<div class="cap-prompt">type the code</div><div class="cap-code"><span>' + code + '</span></div><input class="cap-input" id="capCodeIn" maxlength="5" autocomplete="off" spellcheck="false" style="width:180px"><div class="cap-title" id="capCodeMsg"></div>';
+        var inp = el.querySelector('#capCodeIn');
+        var msg = el.querySelector('#capCodeMsg');
+        inp.focus();
+        inp.addEventListener('input', function () {
+          var v = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+          if (v.length < code.length) return;
+          if (v === code) { msg.textContent = 'correct.'; setTimeout(done, 300); }
+          else { msg.textContent = 'wrong. read it again.'; inp.value = ''; }
+        });
+      } },
+      { mount: function (el, done) {
+        el.innerHTML = '<div class="cap-prompt">click the pad the instant it turns green</div><div class="cap-pad" id="capPad">wait...</div><div class="cap-title" id="capPadMsg">do not click early</div>';
+        var pad = el.querySelector('#capPad');
+        var msg = el.querySelector('#capPadMsg');
+        var green = false, finished = false, tries = 0, timers = [];
+        function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+        function arm() {
+          green = false;
+          pad.classList.remove('go');
+          pad.textContent = 'wait...';
+          msg.textContent = tries ? 'again. do not click early.' : 'do not click early';
+          later(function () {
+            if (finished) return;
+            green = true;
+            pad.classList.add('go');
+            pad.textContent = 'CLICK';
+            later(function () {
+              if (finished || !green) return;
+              green = false;
+              tries++;
+              pad.classList.remove('go');
+              pad.textContent = 'too slow.';
+              msg.textContent = 'you missed the window.';
+              later(arm, 700);
+            }, 1300);
+          }, 900 + Math.random() * 1700);
+        }
+        pad.addEventListener('click', function () {
+          if (finished) return;
+          if (green) {
+            finished = true;
+            green = false;
+            timers.forEach(clearTimeout);
+            msg.textContent = 'reaction accepted.';
+            setTimeout(done, 300);
+          } else {
+            tries++;
+            timers.forEach(clearTimeout);
+            timers = [];
+            arm();
+          }
+        });
+        arm();
+      } },
+      { mount: function (el, done) {
+        el.innerHTML = '<div class="cap-prompt">repeat the sequence</div><div class="cap-tiles three" id="capSeq"></div><div class="cap-title" id="capSeqMsg">watch...</div>';
+        var wrap = el.querySelector('#capSeq');
+        var msg = el.querySelector('#capSeqMsg');
+        var tiles = [], seq = [], step = 0, showing = true, finished = false, i;
+        for (i = 0; i < 9; i++) {
+          var d = document.createElement('div');
+          d.className = 'cap-tile sm';
+          d.dataset.i = i;
+          wrap.appendChild(d);
+          tiles.push(d);
+        }
+        for (i = 0; i < 4; i++) seq.push(Math.floor(Math.random() * 9));
+        function play() {
+          showing = true;
+          step = 0;
+          tiles.forEach(function (t) { t.classList.remove('sel'); });
+          msg.textContent = 'watch...';
+          seq.forEach(function (idx, k) {
+            setTimeout(function () {
+              if (finished) return;
+              tiles[idx].classList.add('sel');
+              setTimeout(function () { tiles[idx].classList.remove('sel'); }, 250);
+              if (k === seq.length - 1) setTimeout(function () { showing = false; msg.textContent = 'your turn'; }, 420);
+            }, 350 + k * 430);
+          });
+        }
+        tiles.forEach(function (t) {
+          t.addEventListener('click', function () {
+            if (showing || finished) return;
+            if (+t.dataset.i === seq[step]) {
+              t.classList.add('sel');
+              setTimeout(function () { t.classList.remove('sel'); }, 150);
+              step++;
+              if (step === seq.length) { finished = true; msg.textContent = 'correct.'; setTimeout(done, 300); }
+            } else {
+              msg.textContent = 'wrong. watch again.';
+              setTimeout(function () { if (!finished) play(); }, 600);
+            }
+          });
+        });
+        play();
+      } },
+      { mount: function (el, done) {
+        el.innerHTML = '<div class="cap-prompt">drag the slider to exactly 42</div><div class="cap-title">we are not telling you where 42 is</div><input type="range" min="0" max="100" value="0" step="1" class="cap-slider" id="capSl"><div class="cap-title" id="capSlMsg">release it on 42</div>';
+        var sl = el.querySelector('#capSl');
+        var msg = el.querySelector('#capSlMsg');
+        sl.addEventListener('change', function () {
+          var v = +sl.value;
+          if (v === 42) { msg.textContent = 'correct.'; setTimeout(done, 300); }
+          else msg.textContent = 'that was ' + v + '. keep dragging.';
+        });
+      } },
+      { mount: function (el, done) {
+        el.innerHTML = '<div class="cap-prompt">find the button and click it</div><div class="cap-find" id="capFind"><button class="cap-findbtn" id="capFindBtn">here</button></div><div class="cap-title" id="capFindMsg">it is in there. somewhere.</div>';
+        el.querySelector('#capFindBtn').addEventListener('click', function () { done(); });
       } },
       { mount: function (el, done) {
         el.innerHTML = '<div class="cap-prompt">confirm you are human</div><div class="cap-run" id="capRun"><button class="cap-runbtn" id="capRunBtn">i am human</button></div><div class="cap-title" id="capRunMsg">it does not want to be clicked</div>';
