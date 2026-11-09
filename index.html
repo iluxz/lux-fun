@@ -546,6 +546,50 @@
       background: rgba(255,255,255,0.05); color: var(--text); font-size: 13px; margin: 8px 4px; }
     .const-list { font-size: 12px; color: var(--muted); margin: 8px 0; min-height: 20px; }
 
+    /* FLIPBOOK-CSS-MARKER */
+    /* flipbook */
+    .fb-stage {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .fb-canvas-wrap {
+      position: relative; border-radius: 12px; border: 1px solid var(--border);
+      overflow: hidden; background: #fff; cursor: crosshair;
+      width: 100%; max-width: 480px; margin: 0 auto;
+    }
+    .fb-canvas { display: block; width: 100%; height: auto; }
+    .fb-toolbar {
+      display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; align-items: center;
+      margin: 8px 0;
+    }
+    .fb-tool {
+      padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; font-size: 11px;
+    }
+    .fb-tool.active { border-color: var(--accent); background: rgba(124,92,255,0.2); }
+    .fb-color {
+      width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border);
+      cursor: pointer; padding: 0;
+    }
+    .fb-color.active { border-color: #fff; transform: scale(1.15); }
+    .fb-size { width: 80px; accent-color: #7c5cff; }
+    .fb-frames {
+      display: flex; gap: 6px; overflow-x: auto; padding: 8px 4px;
+      border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+      min-height: 48px; align-items: center;
+    }
+    .fb-frame {
+      flex: 0 0 auto; width: 48px; height: 36px; border-radius: 4px;
+      border: 2px solid var(--border); background: #fff; cursor: pointer;
+      position: relative; overflow: hidden;
+    }
+    .fb-frame.active { border-color: var(--accent); }
+    .fb-frame img { width: 100%; height: 100%; object-fit: contain; }
+    .fb-frame .fb-fnum { position: absolute; bottom: 1px; right: 3px; font-size: 8px; color: #666; }
+    .fb-controls { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 8px 0; }
+    .fb-fps { display: flex; align-items: center; gap: 8px; justify-content: center; font-size: 11px; color: var(--muted); margin: 4px 0; }
+    .fb-fps input { width: 100px; accent-color: #7c5cff; }
+    .fb-onion { display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 11px; color: var(--muted); margin: 4px 0; }
+
     /* NEW-GAMES-CSS-MARKER */
     /* ===== NEW GAMES ===== */
     .cap-stage {
@@ -788,6 +832,12 @@
         <span class="badge">DRAW</span>
         <h3>Constellation Draw</h3>
         <p>Connect stars. Name your constellation. It will be terrible.</p>
+      </div>
+<!-- FLIPBOOK-CARDS-MARKER -->
+      <div class="game-card" onclick="showGame('flipbook')">
+        <span class="badge">ANIMATE</span>
+        <h3>Flipbook Animator</h3>
+        <p>Draw frame by frame. Play it back. Make something move.</p>
       </div>
 <!-- NEW-GAMES-CARDS-MARKER -->
       <div class="game-card" onclick="showGame('captcha')">
@@ -1144,6 +1194,42 @@
       <button class="cap-btn" onclick="constClear()">clear</button>
     </div>
     <div class="const-list" id="constList"></div>
+  </div>
+  <!-- FLIPBOOK-VIEWS-MARKER -->
+  <!-- FLIPBOOK ANIMATOR -->
+  <div class="game-view" id="flipbook">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Flipbook Animator</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">draw frame by frame. play it back. onion skin shows the previous frame.</p>
+    <div class="fb-stage">
+      <div class="fb-canvas-wrap">
+        <canvas class="fb-canvas" id="fbCanvas" width="400" height="300"></canvas>
+      </div>
+      <div class="fb-toolbar">
+        <button class="fb-tool active" id="fbPen" onclick="fbTool('pen')">pen</button>
+        <button class="fb-tool" id="fbEraser" onclick="fbTool('eraser')">eraser</button>
+        <input type="color" id="fbColor" value="#000000" style="width:32px;height:32px;border:none;background:none;cursor:pointer">
+        <input type="range" class="fb-size" id="fbSize" min="1" max="20" value="3">
+        <button class="fb-tool" onclick="fbClear()">clear frame</button>
+      </div>
+      <div class="fb-onion">
+        <input type="checkbox" id="fbOnion" checked>
+        <label for="fbOnion">onion skin</label>
+      </div>
+      <div class="fb-frames" id="fbFrames"></div>
+      <div class="fb-controls">
+        <button class="cap-btn" onclick="fbAddFrame()">+ frame</button>
+        <button class="cap-btn" onclick="fbDupFrame()">duplicate</button>
+        <button class="cap-btn" onclick="fbDelFrame()">delete</button>
+        <button class="cap-btn" id="fbPlayBtn" onclick="fbTogglePlay()">▶ play</button>
+      </div>
+      <div class="fb-fps">
+        <span>fps</span>
+        <input type="range" id="fbFps" min="1" max="24" value="8">
+        <span id="fbFpsVal">8</span>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--muted)" id="fbMsg">frame 1 of 1</div>
+    </div>
   </div>
   <!-- NEW-GAMES-VIEWS-MARKER -->
   <!-- Definately Not A Robot -->
@@ -3100,6 +3186,259 @@ function constClear() {
   constDraw();
 }
 function init_const() { constInit(); }
+    /* FLIPBOOK-JS-MARKER */
+/* ===== FLIPBOOK ANIMATOR ===== */
+var fbCanvas, fbCtx;
+var fbFrames = []; // each: { data: ImageData }
+var fbCurrent = 0;
+var fbToolMode = 'pen';
+var fbPlaying = false;
+var fbPlayTimer = null;
+var fbDrawing = false;
+var fbLastX = 0, fbLastY = 0;
+
+function fbInit() {
+  fbCanvas = document.getElementById('fbCanvas');
+  if (!fbCanvas) return;
+  fbCtx = fbCanvas.getContext('2d');
+  fbFrames = [];
+  fbCurrent = 0;
+  // start with one blank frame
+  fbCtx.fillStyle = '#fff';
+  fbCtx.fillRect(0, 0, fbCanvas.width, fbCanvas.height);
+  fbSaveFrame();
+  fbRenderFrames();
+  fbUpdateMsg();
+
+  // drawing events
+  fbCanvas.onmousedown = fbStartDraw;
+  fbCanvas.onmousemove = fbMoveDraw;
+  fbCanvas.onmouseup = fbEndDraw;
+  fbCanvas.onmouseleave = fbEndDraw;
+
+  // touch support
+  fbCanvas.ontouchstart = function (e) { e.preventDefault(); var t = e.touches[0]; fbStartDraw({ clientX: t.clientX, clientY: t.clientY, target: fbCanvas }); };
+  fbCanvas.ontouchmove = function (e) { e.preventDefault(); var t = e.touches[0]; fbMoveDraw({ clientX: t.clientX, clientY: t.clientY, target: fbCanvas }); };
+  fbCanvas.ontouchend = fbEndDraw;
+
+  document.getElementById('fbColor').oninput = function () {};
+  document.getElementById('fbSize').oninput = function () {};
+  document.getElementById('fbFps').oninput = function () {
+    document.getElementById('fbFpsVal').textContent = this.value;
+  };
+  document.getElementById('fbOnion').onchange = function () { fbDraw(); };
+}
+
+function fbTool(mode) {
+  fbToolMode = mode;
+  document.getElementById('fbPen').classList.toggle('active', mode === 'pen');
+  document.getElementById('fbEraser').classList.toggle('active', mode === 'eraser');
+}
+
+function fbSaveFrame() {
+  var data = fbCtx.getImageData(0, 0, fbCanvas.width, fbCanvas.height);
+  if (fbFrames[fbCurrent]) {
+    fbFrames[fbCurrent].data = data;
+  } else {
+    fbFrames[fbCurrent] = { data: data };
+  }
+}
+
+function fbLoadFrame(idx) {
+  if (idx < 0 || idx >= fbFrames.length) return;
+  fbSaveFrame();
+  fbCurrent = idx;
+  fbCtx.putImageData(fbFrames[fbCurrent].data, 0, 0);
+  fbRenderFrames();
+  fbUpdateMsg();
+  fbDrawOnion();
+}
+
+function fbAddFrame() {
+  fbSaveFrame();
+  // create blank frame
+  var blank = fbCtx.createImageData(fbCanvas.width, fbCanvas.height);
+  // fill white
+  for (var i = 0; i < blank.data.length; i += 4) {
+    blank.data[i] = 255; blank.data[i+1] = 255; blank.data[i+2] = 255; blank.data[i+3] = 255;
+  }
+  fbFrames.push({ data: blank });
+  fbCurrent = fbFrames.length - 1;
+  fbCtx.putImageData(blank, 0, 0);
+  fbRenderFrames();
+  fbUpdateMsg();
+}
+
+function fbDupFrame() {
+  fbSaveFrame();
+  var copy = new ImageData(new Uint8ClampedArray(fbFrames[fbCurrent].data.data), fbCanvas.width, fbCanvas.height);
+  fbFrames.splice(fbCurrent + 1, 0, { data: copy });
+  fbCurrent++;
+  fbCtx.putImageData(fbFrames[fbCurrent].data, 0, 0);
+  fbRenderFrames();
+  fbUpdateMsg();
+}
+
+function fbDelFrame() {
+  if (fbFrames.length <= 1) return;
+  fbFrames.splice(fbCurrent, 1);
+  if (fbCurrent >= fbFrames.length) fbCurrent = fbFrames.length - 1;
+  fbCtx.putImageData(fbFrames[fbCurrent].data, 0, 0);
+  fbRenderFrames();
+  fbUpdateMsg();
+}
+
+function fbClear() {
+  fbCtx.fillStyle = '#fff';
+  fbCtx.fillRect(0, 0, fbCanvas.width, fbCanvas.height);
+  fbSaveFrame();
+  fbDrawOnion();
+}
+
+function fbStartDraw(e) {
+  fbDrawing = true;
+  var rect = fbCanvas.getBoundingClientRect();
+  var scaleX = fbCanvas.width / rect.width;
+  var scaleY = fbCanvas.height / rect.height;
+  fbLastX = (e.clientX - rect.left) * scaleX;
+  fbLastY = (e.clientY - rect.top) * scaleY;
+  fbCtx.beginPath();
+  fbCtx.moveTo(fbLastX, fbLastY);
+  fbDrawDot(fbLastX, fbLastY);
+}
+
+function fbMoveDraw(e) {
+  if (!fbDrawing) return;
+  var rect = fbCanvas.getBoundingClientRect();
+  var scaleX = fbCanvas.width / rect.width;
+  var scaleY = fbCanvas.height / rect.height;
+  var x = (e.clientX - rect.left) * scaleX;
+  var y = (e.clientY - rect.top) * scaleY;
+  fbCtx.lineWidth = +document.getElementById('fbSize').value;
+  fbCtx.lineCap = 'round';
+  fbCtx.lineJoin = 'round';
+  if (fbToolMode === 'eraser') {
+    fbCtx.globalCompositeOperation = 'destination-out';
+    fbCtx.strokeStyle = 'rgba(0,0,0,1)';
+  } else {
+    fbCtx.globalCompositeOperation = 'source-over';
+    fbCtx.strokeStyle = document.getElementById('fbColor').value;
+  }
+  fbCtx.beginPath();
+  fbCtx.moveTo(fbLastX, fbLastY);
+  fbCtx.lineTo(x, y);
+  fbCtx.stroke();
+  fbLastX = x;
+  fbLastY = y;
+}
+
+function fbDrawDot(x, y) {
+  fbCtx.fillStyle = fbToolMode === 'eraser' ? 'rgba(0,0,0,1)' : document.getElementById('fbColor').value;
+  fbCtx.globalCompositeOperation = fbToolMode === 'eraser' ? 'destination-out' : 'source-over';
+  fbCtx.beginPath();
+  fbCtx.arc(x, y, +document.getElementById('fbSize').value / 2, 0, Math.PI * 2);
+  fbCtx.fill();
+  fbCtx.globalCompositeOperation = 'source-over';
+}
+
+function fbEndDraw() {
+  if (fbDrawing) {
+    fbDrawing = false;
+    fbSaveFrame();
+    fbDrawOnion();
+  }
+}
+
+function fbDrawOnion() {
+  // redraw current frame with onion skin overlay
+  if (!fbOnionChecked()) return;
+  // we handle onion in a separate overlay? simpler: just redraw
+  fbCtx.putImageData(fbFrames[fbCurrent].data, 0, 0);
+  // draw previous frame faintly
+  if (fbCurrent > 0 && document.getElementById('fbOnion').checked) {
+    // use a temp canvas
+    var tmp = document.createElement('canvas');
+    tmp.width = fbCanvas.width; tmp.height = fbCanvas.height;
+    var tctx = tmp.getContext('2d');
+    tctx.putImageData(fbFrames[fbCurrent - 1].data, 0, 0);
+    fbCtx.globalAlpha = 0.25;
+    fbCtx.globalCompositeOperation = 'source-over';
+    fbCtx.drawImage(tmp, 0, 0);
+    fbCtx.globalAlpha = 1;
+  }
+}
+
+function fbOnionChecked() {
+  var el = document.getElementById('fbOnion');
+  return el && el.checked;
+}
+
+function fbRenderFrames() {
+  var strip = document.getElementById('fbFrames');
+  strip.innerHTML = '';
+  fbFrames.forEach(function (f, i) {
+    var div = document.createElement('div');
+    div.className = 'fb-frame' + (i === fbCurrent ? ' active' : '');
+    // thumbnail
+    var thumb = document.createElement('canvas');
+    thumb.width = 48; thumb.height = 36;
+    var tctx = thumb.getContext('2d');
+    // scale down
+    var tmp = document.createElement('canvas');
+    tmp.width = fbCanvas.width; tmp.height = fbCanvas.height;
+    var tmpctx = tmp.getContext('2d');
+    tmpctx.putImageData(f.data, 0, 0);
+    tctx.drawImage(tmp, 0, 0, 48, 36);
+    div.appendChild(thumb);
+    var num = document.createElement('div');
+    num.className = 'fb-fnum';
+    num.textContent = i + 1;
+    div.appendChild(num);
+    div.onclick = (function (idx) { return function () { fbLoadFrame(idx); }; })(i);
+    strip.appendChild(div);
+  });
+}
+
+function fbUpdateMsg() {
+  document.getElementById('fbMsg').textContent = 'frame ' + (fbCurrent + 1) + ' of ' + fbFrames.length;
+}
+
+function fbTogglePlay() {
+  if (fbPlaying) {
+    fbPlaying = false;
+    clearInterval(fbPlayTimer);
+    fbPlayTimer = null;
+    document.getElementById('fbPlayBtn').textContent = '▶ play';
+    fbLoadFrame(fbCurrent);
+    return;
+  }
+  fbPlaying = true;
+  document.getElementById('fbPlayBtn').textContent = '⏸ stop';
+  // save current
+  fbSaveFrame();
+  var fps = +document.getElementById('fbFps').value;
+  var interval = 1000 / fps;
+  var frameIdx = 0;
+  // show frames in sequence
+  function showNext() {
+    if (!fbPlaying) return;
+    fbCtx.putImageData(fbFrames[frameIdx].data, 0, 0);
+    frameIdx = (frameIdx + 1) % fbFrames.length;
+    fbUpdateMsgPlay(frameIdx);
+  }
+  showNext();
+  fbPlayTimer = setInterval(showNext, interval);
+}
+
+function fbUpdateMsgPlay(idx) {
+  document.getElementById('fbMsg').textContent = 'playing · frame ' + idx + ' of ' + fbFrames.length;
+}
+
+function init_flipbook() {
+  fbPlaying = false;
+  if (fbPlayTimer) { clearInterval(fbPlayTimer); fbPlayTimer = null; }
+  fbInit();
+}
     /* NEW-GAMES-JS-MARKER */
     /* ===== GAME INIT HOOK ===== */
     (function () {
