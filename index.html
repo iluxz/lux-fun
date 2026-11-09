@@ -424,6 +424,128 @@
       text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; min-height: 16px;
     }
 
+    /* GAMES2-CSS-MARKER */
+    /* games2: decision + idle + physics + trivia + drawing */
+    .g2-card { }
+    /* Would You Press The Button */
+    .wypb-opts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+    .wypb-opt {
+      flex: 1 1 200px; max-width: 260px; min-height: 110px; padding: 14px;
+      border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+      cursor: pointer; text-align: left; font-size: 13px; line-height: 1.5; color: var(--text);
+      transition: transform 0.1s, border-color 0.15s, background 0.15s;
+    }
+    .wypb-opt:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(124,92,255,0.1); }
+    .wypb-result { text-align: center; margin: 16px 0; }
+    .wypb-bar { display: flex; height: 24px; border-radius: 12px; overflow: hidden; margin: 8px 0; }
+    .wypb-bar > div { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+    .wypb-bar .a { background: rgba(124,92,255,0.7); }
+    .wypb-bar .b { background: rgba(255,90,138,0.7); }
+    /* Absurd Trolley */
+    .trolley-scene {
+      border-radius: 12px; border: 1px solid var(--border); padding: 18px;
+      background: rgba(255,255,255,0.03); margin: 12px 0; min-height: 80px;
+      font-size: 14px; line-height: 1.6;
+    }
+    .trolley-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 12px 0; }
+    .trolley-score {
+      text-align: center; font-size: 28px; font-weight: 800; margin: 16px 0 4px;
+    }
+    .trolley-grade { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+    /* Plant Watering */
+    .plant-stage {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 20px; border-radius: 12px; border: 1px solid var(--border);
+      background: radial-gradient(circle at 50% 80%, rgba(80,200,120,0.08), rgba(0,0,0,0.2));
+    }
+    .plant-emoji { font-size: 72px; line-height: 1; transition: transform 0.3s; }
+    .plant-emoji.wilt { filter: grayscale(0.6) brightness(0.7); transform: rotate(-8deg); }
+    .plant-info { font-size: 12px; color: var(--muted); text-align: center; }
+    .plant-water-btn {
+      padding: 10px 24px; border-radius: 8px; border: 1px solid #50c878;
+      background: rgba(80,200,120,0.15); color: #d6ffe4; cursor: pointer;
+      font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .plant-water-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    /* Stimulation Clicker */
+    .stim-area {
+      position: relative; border-radius: 12px; border: 1px solid var(--border);
+      overflow: hidden; height: 320px; cursor: pointer;
+      background: radial-gradient(circle at 50% 50%, #1a1436, #0a0913);
+    }
+    .stim-count { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      font-size: 48px; font-weight: 900; color: #fff; pointer-events: none;
+      text-shadow: 0 0 20px rgba(124,92,255,0.8); z-index: 2; }
+    .stim-particle {
+      position: absolute; pointer-events: none; font-size: 18px;
+      animation: stim-fly 1.2s ease-out forwards;
+    }
+    @keyframes stim-fly {
+      0% { opacity: 1; transform: translate(0,0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3) rotate(360deg); }
+    }
+    .stim-shake { animation: stim-shake 0.15s; }
+    @keyframes stim-shake {
+      0%,100% { transform: translate(0,0); }
+      25% { transform: translate(-4px,2px); }
+      50% { transform: translate(4px,-2px); }
+      75% { transform: translate(-2px,-1px); }
+    }
+    /* Paper Airplane */
+    .paper-stage {
+      position: relative; border-radius: 12px; border: 1px solid var(--border);
+      overflow: hidden; background: linear-gradient(180deg, #87ceeb 0%, #e0f7fa 60%, #81c784 100%);
+      height: 300px;
+    }
+    .paper-canvas { display: block; width: 100%; height: 100%; }
+    .paper-info { font-size: 12px; color: var(--muted); text-align: center; margin: 8px 0; }
+    /* Who Was Alive */
+    .wwa-year { font-size: 32px; font-weight: 800; text-align: center; margin: 12px 0; }
+    .wwa-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin: 12px 0; }
+    .wwa-card {
+      padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04); text-align: center; font-size: 12px;
+      cursor: pointer; transition: transform 0.1s, border-color 0.15s;
+    }
+    .wwa-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .wwa-card.correct { border-color: #50c878; background: rgba(80,200,120,0.15); }
+    .wwa-card.wrong { border-color: #ff5a8a; background: rgba(255,90,138,0.15); }
+    .wwa-score { text-align: center; font-size: 18px; font-weight: 700; margin: 12px 0; }
+    /* Size of Life */
+    .sol-slider { width: 100%; max-width: 400px; margin: 16px auto; display: block; accent-color: #7c5cff; }
+    .sol-view {
+      border-radius: 12px; border: 1px solid var(--border); overflow: hidden;
+      height: 260px; position: relative; background: #0a0913;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sol-emoji { font-size: 120px; transition: transform 0.3s, font-size 0.3s; }
+    .sol-label { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+      font-size: 14px; font-weight: 700; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,0.8); }
+    .sol-desc { text-align: center; font-size: 12px; color: var(--muted); margin: 8px 0; min-height: 32px; }
+    /* Universe Forecast */
+    .uf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin: 12px 0; }
+    .uf-card {
+      padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04); text-align: center;
+    }
+    .uf-card .icon { font-size: 32px; margin-bottom: 4px; }
+    .uf-card .place { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+    .uf-card .weather { font-size: 11px; color: var(--muted); }
+    .uf-card .temp { font-size: 16px; font-weight: 700; margin-top: 4px; }
+    /* Perfect Circle */
+    .pc-canvas { border-radius: 12px; border: 1px solid var(--border); background: #0a0913; display: block; cursor: crosshair; }
+    .pc-score { text-align: center; font-size: 24px; font-weight: 800; margin: 12px 0 4px; }
+    .pc-grade { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    /* Logos From Memory */
+    .lfm-prompt { text-align: center; font-size: 16px; font-weight: 700; margin: 12px 0; }
+    .lfm-canvas { border-radius: 12px; border: 1px solid var(--border); background: #fff; display: block; cursor: crosshair; }
+    .lfm-score { text-align: center; font-size: 18px; font-weight: 700; margin: 12px 0; }
+    /* Constellation Draw */
+    .const-canvas { border-radius: 12px; border: 1px solid var(--border); background: #050816; display: block; cursor: crosshair; }
+    .const-name { width: 200px; max-width: 80%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); color: var(--text); font-size: 13px; margin: 8px 4px; }
+    .const-list { font-size: 12px; color: var(--muted); margin: 8px 0; min-height: 20px; }
+
     /* NEW-GAMES-CSS-MARKER */
     /* ===== NEW GAMES ===== */
     .cap-stage {
@@ -610,6 +732,62 @@
         <span class="badge">PERCEPTION</span>
         <h3>Color Guess</h3>
         <p>Which hex code matches the color shown? 10 rounds.</p>
+      </div>
+<!-- GAMES2-CARDS-MARKER -->
+      <div class="game-card" onclick="showGame('wypb')">
+        <span class="badge">CHOICE</span>
+        <h3>Would You Press The Button</h3>
+        <p>Two absurd options. You must pick one. See what everyone else chose.</p>
+      </div>
+      <div class="game-card" onclick="showGame('trolley')">
+        <span class="badge">ETHICS</span>
+        <h3>Absurd Trolley Problems</h3>
+        <p>Increasingly unhinged moral dilemmas. Your score is meaningless and so is your morality.</p>
+      </div>
+      <div class="game-card" onclick="showGame('plant')">
+        <span class="badge">IDLE</span>
+        <h3>Plant Watering</h3>
+        <p>Water a plant once a day. It grows over weeks. No rewards. Just a plant.</p>
+      </div>
+      <div class="game-card" onclick="showGame('stim')">
+        <span class="badge">CLICKER</span>
+        <h3>Stimulation Clicker</h3>
+        <p>Click. The screen gets more chaotic. Keep clicking. Why are you still clicking.</p>
+      </div>
+      <div class="game-card" onclick="showGame('paper')">
+        <span class="badge">PHYSICS</span>
+        <h3>Paper Airplane</h3>
+        <p>Fold a plane by dragging creases. Throw it. Watch it glide or faceplant.</p>
+      </div>
+      <div class="game-card" onclick="showGame('wwa')">
+        <span class="badge">TRIVIA</span>
+        <h3>Who Was Alive?</h3>
+        <p>Pick a year. Guess which historical figures were alive at the same time.</p>
+      </div>
+      <div class="game-card" onclick="showGame('sol')">
+        <span class="badge">SCALE</span>
+        <h3>Size of Life</h3>
+        <p>Zoom from a cell to the observable universe. Everything is either very small or very large.</p>
+      </div>
+      <div class="game-card" onclick="showGame('uf')">
+        <span class="badge">WEIRD</span>
+        <h3>Universe Forecast</h3>
+        <p>Weather forecast, but for the entire universe. Absurd and probably accurate.</p>
+      </div>
+      <div class="game-card" onclick="showGame('pc')">
+        <span class="badge">DRAW</span>
+        <h3>Draw a Perfect Circle</h3>
+        <p>Draw a circle. Get scored. It will never be perfect. Accept this.</p>
+      </div>
+      <div class="game-card" onclick="showGame('lfm')">
+        <span class="badge">DRAW</span>
+        <h3>Draw Logos From Memory</h3>
+        <p>Draw a famous logo from memory. Get scored on accuracy. Humbling.</p>
+      </div>
+      <div class="game-card" onclick="showGame('const')">
+        <span class="badge">DRAW</span>
+        <h3>Constellation Draw</h3>
+        <p>Connect stars. Name your constellation. It will be terrible.</p>
       </div>
 <!-- NEW-GAMES-CARDS-MARKER -->
       <div class="game-card" onclick="showGame('captcha')">
@@ -832,6 +1010,141 @@
     </div>
   </div>
 
+  <!-- GAMES2-VIEWS-MARKER -->
+  <!-- WOULD YOU PRESS THE BUTTON -->
+  <div class="game-view" id="wypb">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Would You Press The Button</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Two options. You must pick one. No skipping.</p>
+    <div class="wypb-opts" id="wypbOpts"></div>
+    <div class="wypb-result" id="wypbResult"></div>
+  </div>
+
+  <!-- ABSURD TROLLEY PROBLEMS -->
+  <div class="game-view" id="trolley">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Absurd Trolley Problems</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Pull the lever or don't. Your morality is on trial.</p>
+    <div class="trolley-scene" id="trolleyScene"></div>
+    <div class="trolley-btns">
+      <button class="cap-btn" onclick="trolleyPull()">pull the lever</button>
+      <button class="cap-btn" onclick="trolleyDont()">do nothing</button>
+    </div>
+    <div class="trolley-score" id="trolleyScore">0</div>
+    <div class="trolley-grade" id="trolleyGrade">moral score</div>
+    <div style="text-align:center"><button class="cap-btn" onclick="init_trolley()">new scenario</button></div>
+  </div>
+
+  <!-- PLANT WATERING -->
+  <div class="game-view" id="plant">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Plant Watering</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Water it once a day. It grows. That's it.</p>
+    <div class="plant-stage">
+      <div class="plant-emoji" id="plantEmoji">🌱</div>
+      <div class="plant-info" id="plantInfo">day 1 · 0 waterings</div>
+      <button class="plant-water-btn" id="plantBtn" onclick="plantWater()">water</button>
+    </div>
+    <div style="text-align:center;margin-top:12px"><button class="cap-btn" onclick="plantReset()">reset plant</button></div>
+  </div>
+
+  <!-- STIMULATION CLICKER -->
+  <div class="game-view" id="stim">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Stimulation Clicker</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Click. The screen gets more chaotic. Keep clicking.</p>
+    <div class="stim-area" id="stimArea">
+      <div class="stim-count" id="stimCount">0</div>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--muted)" id="stimMsg">click anywhere in the box</div>
+  </div>
+
+  <!-- PAPER AIRPLANE -->
+  <div class="game-view" id="paper">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Paper Airplane</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Drag to fold creases. Click throw. Watch it fly or crash.</p>
+    <div class="paper-stage">
+      <canvas class="paper-canvas" id="paperCanvas"></canvas>
+    </div>
+    <div class="paper-info" id="paperInfo">drag to fold · click throw to launch</div>
+    <div style="text-align:center;margin-top:8px">
+      <button class="cap-btn" onclick="paperThrow()">throw</button>
+      <button class="cap-btn" onclick="paperReset()">reset</button>
+    </div>
+  </div>
+
+  <!-- WHO WAS ALIVE -->
+  <div class="game-view" id="wwa">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Who Was Alive?</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">A year appears. Which of these people were alive then?</p>
+    <div class="wwa-year" id="wwaYear">1900</div>
+    <div class="wwa-cards" id="wwaCards"></div>
+    <div class="wwa-score" id="wwaScore">0 / 0</div>
+    <div style="text-align:center"><button class="cap-btn" onclick="init_wwa()">new round</button></div>
+  </div>
+
+  <!-- SIZE OF LIFE -->
+  <div class="game-view" id="sol">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Size of Life</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Drag the slider. Everything is either very small or very large.</p>
+    <div class="sol-view">
+      <div class="sol-emoji" id="solEmoji">🦠</div>
+      <div class="sol-label" id="solLabel">cell</div>
+    </div>
+    <input type="range" class="sol-slider" id="solSlider" min="0" max="100" value="20">
+    <div class="sol-desc" id="solDesc">a single cell. you can't see it. it doesn't care.</div>
+  </div>
+
+  <!-- UNIVERSE FORECAST -->
+  <div class="game-view" id="uf">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Universe Forecast</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Weather forecast for the entire universe.</p>
+    <div class="uf-grid" id="ufGrid"></div>
+    <div style="text-align:center;margin-top:12px"><button class="cap-btn" onclick="init_uf()">refresh forecast</button></div>
+  </div>
+
+  <!-- DRAW PERFECT CIRCLE -->
+  <div class="game-view" id="pc">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Draw a Perfect Circle</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Draw a circle. Get scored. It will never be perfect.</p>
+    <canvas class="pc-canvas" id="pcCanvas" width="320" height="320"></canvas>
+    <div class="pc-score" id="pcScore">—</div>
+    <div class="pc-grade" id="pcGrade">draw a circle to get scored</div>
+    <div style="text-align:center"><button class="cap-btn" onclick="pcClear()">clear</button></div>
+  </div>
+
+  <!-- DRAW LOGOS FROM MEMORY -->
+  <div class="game-view" id="lfm">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Draw Logos From Memory</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Draw the logo from memory. Get scored. Humbling.</p>
+    <div class="lfm-prompt" id="lfmPrompt">Nike Swoosh</div>
+    <canvas class="lfm-canvas" id="lfmCanvas" width="320" height="200"></canvas>
+    <div class="lfm-score" id="lfmScore">draw to get scored</div>
+    <div style="text-align:center;margin-top:8px">
+      <button class="cap-btn" onclick="lfmNext()">next logo</button>
+      <button class="cap-btn" onclick="lfmClear()">clear</button>
+    </div>
+  </div>
+
+  <!-- CONSTELLATION DRAW -->
+  <div class="game-view" id="const">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Constellation Draw</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">Click stars to connect them. Name your constellation.</p>
+    <canvas class="const-canvas" id="constCanvas" width="320" height="320"></canvas>
+    <div style="text-align:center;margin-top:8px">
+      <input class="const-name" id="constName" placeholder="name your constellation" maxlength="24">
+      <button class="cap-btn" onclick="constSave()">save</button>
+      <button class="cap-btn" onclick="constClear()">clear</button>
+    </div>
+    <div class="const-list" id="constList"></div>
+  </div>
   <!-- NEW-GAMES-VIEWS-MARKER -->
   <!-- Definately Not A Robot -->
   <div class="game-view" id="captcha">
@@ -2220,6 +2533,568 @@
       flHud();
       st('st-fling', 'strength set to ' + fl.str.toFixed(1) + '. max throw ' + Math.round(fl.str * 100) + 'm.');
     }
+    /* GAMES2-JS-MARKER */
+/* ===== WOULD YOU PRESS THE BUTTON ===== */
+var wypbPairs = [
+  ['be able to fly but only at walking speed', 'be invisible but only when no one is looking'],
+  ['have a rewind button for your life (3 uses total)', 'never need sleep again'],
+  ['know the exact date of your death', 'never know and always wonder'],
+  ['be able to talk to animals but they all hate you', 'be loved by all animals but can never understand them'],
+  ['have $10 million but everyone you love forgets you exist', 'have $0 but everyone remembers you forever'],
+  ['live in a world with no music', 'live in a world with only one song forever'],
+  ['be able to read minds but only the boring thoughts', 'be unable to read minds but everyone thinks you can'],
+  ['travel to any point in the past but you cant change anything', 'travel to any point in the future but you cant stay'],
+  ['be the funniest person alive but only dogs laugh', 'be the smartest person alive but only cats understand you'],
+  ['never feel pain again', 'never feel sadness again'],
+  ['have a pause button for time (10 min/day)', 'have a fast-forward button (1 hr/day)'],
+  ['be famous for something embarrassing', 'be unknown for something incredible'],
+  ['eat only pizza forever', 'never eat pizza again'],
+  ['control fire but you are afraid of it', 'control water but you are hydrophobic'],
+  ['know every language but can only speak in rhymes', 'speak normally but only understand 3 languages'],
+];
+var wypbVotes = {};
+function wypbPick(pair, choice) {
+  var key = pair.join('|');
+  if (!wypbVotes[key]) wypbVotes[key] = { a: 0, b: 0 };
+  wypbVotes[key][choice]++;
+  var v = wypbVotes[key];
+  var total = v.a + v.b;
+  var pa = Math.round(v.a / total * 100);
+  var pb = 100 - pa;
+  var res = document.getElementById('wypbResult');
+  res.innerHTML = '<div class="wypb-bar"><div class="a" style="width:' + pa + '%">' + pa + '%</div><div class="b" style="width:' + pb + '%">' + pb + '%</div></div>' +
+    '<div style="font-size:12px;color:var(--muted)">' + total + ' votes · ' + (choice === 'a' ? 'you pressed A' : 'you pressed B') + '</div>' +
+    '<div style="margin-top:12px"><button class="cap-btn" onclick="wypbNext()">next dilemma</button></div>';
+  document.querySelectorAll('.wypb-opt').forEach(function (el) { el.style.pointerEvents = 'none'; el.style.opacity = '0.6'; });
+}
+function wypbNext() {
+  var pair = wypbPairs[Math.floor(Math.random() * wypbPairs.length)];
+  var opts = document.getElementById('wypbOpts');
+  opts.innerHTML = '';
+  document.getElementById('wypbResult').innerHTML = '';
+  var a = document.createElement('div');
+  a.className = 'wypb-opt';
+  a.textContent = pair[0];
+  a.onclick = function () { wypbPick(pair, 'a'); };
+  var b = document.createElement('div');
+  b.className = 'wypb-opt';
+  b.textContent = pair[1];
+  b.onclick = function () { wypbPick(pair, 'b'); };
+  opts.appendChild(a);
+  opts.appendChild(b);
+}
+function init_wypb() { wypbNext(); }
+
+/* ===== ABSURD TROLLEY PROBLEMS ===== */
+var trolleyScenarios = [
+  { scene: 'A runaway trolley is heading toward 5 people tied to the track. You can pull a lever to divert it to a track with 1 person. But that 1 person is your childhood best friend. Also the 5 people are all clones of you. Also the trolley is made of cheese.', pull: 'You saved 5 of yourself. Your best friend is cheese now. Moral score: questionable.', dont: '5 of you are dead. Your best friend lives but is traumatized by watching 5 of you die. Moral score: also questionable.' },
+  { scene: 'A trolley is heading toward 10 people. You can pull a lever to divert it to a track with 1 person. But that person is a baby. But the 10 people are all serial killers. But the baby will grow up to be a serial killer. But it hasnt yet. Also the trolley driver is your mom.', pull: 'You killed a baby. Your mom is relieved. Moral score: complicated.', dont: 'You killed 10 serial killers. Your mom is disappointed in you. Moral score: also complicated.' },
+  { scene: 'A trolley is heading toward 1 person. You can pull a lever to divert it to a track with 0 people. But the lever is made of bees. Also pulling it donates $1 to charity. Also the person on the track is a robot. Also the robot is your father.', pull: 'You got stung by bees and donated $1. Your robot father is saved. Moral score: heroic but itchy.', dont: 'Your robot father is dead. You have no bee stings. Moral score: clean hands, empty heart.' },
+  { scene: 'A trolley is heading toward a group of philosophers debating whether trolleys exist. You can pull a lever to divert it to a track with 1 person who is also a philosopher but he believes trolleys are a social construct. If you pull the lever he will be proven wrong.', pull: 'You proved him wrong. He is dead but philosophically vindicated. Moral score: academic.', dont: 'The philosophers on the main track are dead. The surviving philosopher says this proves his point. Moral score: infuriating.' },
+  { scene: 'A trolley is heading toward 5 people. You can pull a lever to divert it. But the lever is on the other side of the track. To reach it you must cross the track. The trolley is 10 seconds away. You are a slow walker.', pull: 'You made it. But barely. The 5 people are saved. You are sweating. Moral score: cardio.', dont: 'You did not make it. The 5 people are dead. You are not sweating. Moral score: rested.' },
+  { scene: 'A trolley is heading toward 1 person. You can pull a lever to divert it to a track with 5 people. But the 5 people are all you from parallel universes where you made different choices. Pulling the lever kills 5 versions of you. Not pulling kills 1 version of you that is not you.', pull: '5 of you are dead. You are the surviving you. Moral score: survivor guilt.', dont: '1 of you is dead. It was not you but it could have been. Moral score: existential dread.' },
+];
+var trolleyScore = 0;
+function trolleyPick(choice) {
+  var sc = trolleyScenarios[Math.floor(Math.random() * trolleyScenarios.length)];
+  // find the scenario currently shown by matching scene text
+  var sceneEl = document.getElementById('trolleyScene');
+  var current = trolleyScenarios.find(function (s) { return s.scene === sceneEl.textContent; }) || sc;
+  var msg = choice === 'pull' ? current.pull : current.dont;
+  trolleyScore += choice === 'pull' ? 1 : 0;
+  document.getElementById('trolleyScore').textContent = trolleyScore;
+  document.getElementById('trolleyGrade').textContent = msg;
+}
+function trolleyPull() { trolleyPick('pull'); }
+function trolleyDont() { trolleyPick('dont'); }
+function init_trolley() {
+  trolleyScore = 0;
+  document.getElementById('trolleyScore').textContent = '0';
+  var sc = trolleyScenarios[Math.floor(Math.random() * trolleyScenarios.length)];
+  document.getElementById('trolleyScene').textContent = sc.scene;
+  document.getElementById('trolleyGrade').textContent = 'moral score';
+}
+
+/* ===== PLANT WATERING ===== */
+var plantState = { day: 1, waterings: 0, lastWater: 0, stage: 0 };
+var plantStages = ['🌱', '🌿', '🪴', '🌳', '🌸', '🌺', '🍂'];
+function plantUpdate() {
+  var now = Date.now();
+  var daysSince = (now - plantState.lastWater) / 86400000;
+  var emoji = document.getElementById('plantEmoji');
+  var info = document.getElementById('plantInfo');
+  var btn = document.getElementById('plantBtn');
+  var stage = Math.min(plantStages.length - 1, Math.floor(plantState.waterings / 3));
+  plantState.stage = stage;
+  emoji.textContent = plantStages[stage];
+  if (daysSince > 2 && plantState.waterings > 0) emoji.classList.add('wilt');
+  else emoji.classList.remove('wilt');
+  info.textContent = 'day ' + plantState.day + ' · ' + plantState.waterings + ' waterings · stage ' + (stage + 1) + '/' + plantStages.length;
+  var canWater = (now - plantState.lastWater) > 60000; // 1 min cooldown for testing (would be 1 day)
+  btn.disabled = !canWater;
+  btn.textContent = canWater ? 'water' : 'watered recently';
+}
+function plantWater() {
+  var now = Date.now();
+  if (now - plantState.lastWater < 60000) return;
+  plantState.waterings++;
+  plantState.lastWater = now;
+  plantState.day++;
+  try { localStorage.setItem('luxfun_plant', JSON.stringify(plantState)); } catch (e) {}
+  plantUpdate();
+  document.getElementById('plantEmoji').style.transform = 'scale(1.3)';
+  setTimeout(function () { document.getElementById('plantEmoji').style.transform = ''; }, 300);
+}
+function plantReset() {
+  plantState = { day: 1, waterings: 0, lastWater: 0, stage: 0 };
+  try { localStorage.removeItem('luxfun_plant'); } catch (e) {}
+  plantUpdate();
+}
+function init_plant() {
+  try {
+    var saved = localStorage.getItem('luxfun_plant');
+    if (saved) plantState = JSON.parse(saved);
+  } catch (e) {}
+  plantUpdate();
+  if (!window._plantTick) {
+    window._plantTick = setInterval(plantUpdate, 5000);
+  }
+}
+
+/* ===== STIMULATION CLICKER ===== */
+var stimCount = 0;
+var stimEmojis = ['✨', '💥', '⚡', '🔥', '💫', '🌟', '⭐', '💢', '❗', '❓', '🎉', '🤯', '😵', '🤪', '🤪'];
+function stimClick(e) {
+  stimCount++;
+  document.getElementById('stimCount').textContent = stimCount;
+  var area = document.getElementById('stimArea');
+  var rect = area.getBoundingClientRect();
+  var x = e.clientX - rect.left;
+  var y = e.clientY - rect.top;
+  var p = document.createElement('div');
+  p.className = 'stim-particle';
+  p.textContent = stimEmojis[Math.floor(Math.random() * stimEmojis.length)];
+  p.style.left = x + 'px';
+  p.style.top = y + 'px';
+  p.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
+  p.style.setProperty('--dy', (Math.random() * 200 - 100) + 'px');
+  area.appendChild(p);
+  setTimeout(function () { p.remove(); }, 1200);
+  // shake
+  area.classList.remove('stim-shake');
+  void area.offsetWidth;
+  area.classList.add('stim-shake');
+  // background color shift
+  var hue = (stimCount * 7) % 360;
+  area.style.background = 'radial-gradient(circle at ' + (x / rect.width * 100) + '% ' + (y / rect.height * 100) + '%, hsl(' + hue + ',70%,25%), #0a0913)';
+  // font size grows
+  var fs = Math.min(96, 48 + Math.floor(stimCount / 10) * 2);
+  document.getElementById('stimCount').style.fontSize = fs + 'px';
+  if (stimCount % 50 === 0) {
+    document.getElementById('stimMsg').textContent = stimCount + ' clicks. why are you still here.';
+  }
+}
+function init_stim() {
+  stimCount = 0;
+  document.getElementById('stimCount').textContent = '0';
+  document.getElementById('stimCount').style.fontSize = '48px';
+  document.getElementById('stimMsg').textContent = 'click anywhere in the box';
+  document.getElementById('stimArea').style.background = 'radial-gradient(circle at 50% 50%, #1a1436, #0a0913)';
+  document.getElementById('stimArea').onclick = stimClick;
+}
+
+/* ===== PAPER AIRPLANE ===== */
+var paperCanvas, paperCtx, paperFolds = [], paperThrowing = false, paperProgress = 0, paperAnim = 0;
+function paperInit() {
+  paperCanvas = document.getElementById('paperCanvas');
+  if (!paperCanvas) return;
+  paperCtx = paperCanvas.getContext('2d');
+  paperCanvas.width = paperCanvas.clientWidth * (window.devicePixelRatio || 1);
+  paperCanvas.height = paperCanvas.clientHeight * (window.devicePixelRatio || 1);
+  paperCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  paperFolds = [];
+  paperThrowing = false;
+  paperProgress = 0;
+  paperDraw();
+  paperCanvas.onmousedown = function (e) {
+    if (paperThrowing) return;
+    var rect = paperCanvas.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+    paperFolds.push({ x: x, y: y });
+    paperDraw();
+  };
+}
+function paperDraw() {
+  if (!paperCtx) return;
+  var w = paperCanvas.clientWidth;
+  var h = paperCanvas.clientHeight;
+  paperCtx.clearRect(0, 0, w, h);
+  // sky
+  paperCtx.fillStyle = '#87ceeb';
+  paperCtx.fillRect(0, 0, w, h * 0.7);
+  paperCtx.fillStyle = '#81c784';
+  paperCtx.fillRect(0, h * 0.7, w, h * 0.3);
+  // plane body
+  var cx = w * 0.3;
+  var cy = h * 0.4;
+  paperCtx.save();
+  if (paperThrowing) {
+    cx = w * 0.3 + paperProgress * (w * 0.6);
+    cy = h * 0.4 - Math.sin(paperProgress * Math.PI) * 80 + paperProgress * 40;
+  }
+  paperCtx.translate(cx, cy);
+  paperCtx.rotate(paperThrowing ? -0.2 + paperProgress * 0.4 : 0);
+  paperCtx.fillStyle = '#fff';
+  paperCtx.strokeStyle = '#999';
+  paperCtx.lineWidth = 1;
+  // wings
+  paperCtx.beginPath();
+  paperCtx.moveTo(0, 0);
+  paperCtx.lineTo(-40, 15);
+  paperCtx.lineTo(-10, 0);
+  paperCtx.closePath();
+  paperCtx.fill();
+  paperCtx.stroke();
+  paperCtx.beginPath();
+  paperCtx.moveTo(0, 0);
+  paperCtx.lineTo(40, 15);
+  paperCtx.lineTo(10, 0);
+  paperCtx.closePath();
+  paperCtx.fill();
+  paperCtx.stroke();
+  // body
+  paperCtx.beginPath();
+  paperCtx.moveTo(0, 0);
+  paperCtx.lineTo(-5, -2);
+  paperCtx.lineTo(30, 0);
+  paperCtx.lineTo(-5, 2);
+  paperCtx.closePath();
+  paperCtx.fillStyle = '#f0f0f0';
+  paperCtx.fill();
+  paperCtx.stroke();
+  paperCtx.restore();
+  // folds
+  paperCtx.strokeStyle = 'rgba(0,0,0,0.3)';
+  paperCtx.lineWidth = 1;
+  paperFolds.forEach(function (f) {
+    paperCtx.beginPath();
+    paperCtx.moveTo(f.x - 20, f.y);
+    paperCtx.lineTo(f.x + 20, f.y);
+    paperCtx.stroke();
+  });
+}
+function paperThrow() {
+  if (paperThrowing) return;
+  paperThrowing = true;
+  paperProgress = 0;
+  function step() {
+    paperProgress += 0.015;
+    paperDraw();
+    if (paperProgress < 1) requestAnimationFrame(step);
+    else {
+      paperThrowing = false;
+      var dist = Math.round(200 + paperFolds.length * 30);
+      document.getElementById('paperInfo').textContent = 'flew ' + dist + 'm! ' + (paperFolds.length > 3 ? 'nice folds.' : 'try more folds.');
+    }
+  }
+  step();
+}
+function paperReset() {
+  paperFolds = [];
+  paperThrowing = false;
+  paperProgress = 0;
+  paperDraw();
+  document.getElementById('paperInfo').textContent = 'drag to fold · click throw to launch';
+}
+function init_paper() { paperInit(); }
+
+/* ===== WHO WAS ALIVE ===== */
+var wwaPeople = [
+  { name: 'Cleopatra', born: -69, died: -30 },
+  { name: 'Julius Caesar', born: -100, died: -44 },
+  { name: 'Leonardo da Vinci', born: 1452, died: 1519 },
+  { name: 'William Shakespeare', born: 1564, died: 1616 },
+  { name: 'Isaac Newton', born: 1643, died: 1727 },
+  { name: 'Napoleon', born: 1769, died: 1821 },
+  { name: 'Abraham Lincoln', born: 1809, died: 1865 },
+  { name: 'Mark Twain', born: 1835, died: 1910 },
+  { name: 'Albert Einstein', born: 1879, died: 1955 },
+  { name: 'Marie Curie', born: 1867, died: 1934 },
+  { name: 'Winston Churchill', born: 1874, died: 1965 },
+  { name: 'Marilyn Monroe', born: 1926, died: 1962 },
+  { name: 'Martin Luther King Jr', born: 1929, died: 1968 },
+  { name: 'Steve Jobs', born: 1955, died: 2011 },
+  { name: 'Princess Diana', born: 1961, died: 1997 },
+  { name: 'Michael Jackson', born: 1958, died: 2009 },
+  { name: 'Nelson Mandela', born: 1918, died: 2013 },
+  { name: 'Frida Kahlo', born: 1907, died: 1954 },
+  { name: 'Pablo Picasso', born: 1881, died: 1973 },
+  { name: 'Amelia Earhart', born: 1897, died: 1937 },
+  { name: 'Helen Keller', born: 1880, died: 1968 },
+  { name: 'Charlie Chaplin', born: 1889, died: 1977 },
+  { name: 'Walt Disney', born: 1901, died: 1966 },
+  { name: 'Bruce Lee', born: 1940, died: 1973 },
+];
+var wwaYear = 1900, wwaCorrect = 0, wwaTotal = 0;
+function init_wwa() {
+  wwaYear = 1800 + Math.floor(Math.random() * 220);
+  document.getElementById('wwaYear').textContent = wwaYear;
+  var pool = wwaPeople.slice().sort(function () { return Math.random() - 0.5; }).slice(0, 8);
+  var cards = document.getElementById('wwaCards');
+  cards.innerHTML = '';
+  pool.forEach(function (p) {
+    var alive = p.born <= wwaYear && wwaYear <= p.died;
+    var card = document.createElement('div');
+    card.className = 'wwa-card';
+    card.textContent = p.name;
+    card.dataset.alive = alive ? '1' : '0';
+    card.onclick = function () {
+      if (card.classList.contains('correct') || card.classList.contains('wrong')) return;
+      wwaTotal++;
+      if (alive) { card.classList.add('correct'); wwaCorrect++; }
+      else { card.classList.add('wrong'); }
+      document.getElementById('wwaScore').textContent = wwaCorrect + ' / ' + wwaTotal;
+    };
+    cards.appendChild(card);
+  });
+  document.getElementById('wwaScore').textContent = wwaCorrect + ' / ' + wwaTotal;
+}
+
+/* ===== SIZE OF LIFE ===== */
+var solData = [
+  { emoji: '🦠', label: 'cell', desc: 'a single cell. you can\'t see it. it doesn\'t care.' },
+  { emoji: '🪲', label: 'beetle', desc: 'a beetle. it has been here longer than you.' },
+  { emoji: '🐱', label: 'cat', desc: 'a cat. it is judging you. it has always been judging you.' },
+  { emoji: '👤', label: 'human', desc: 'you. statistically average. sorry.' },
+  { emoji: '🏠', label: 'house', desc: 'a house. you live in one. it is bigger than you.' },
+  { emoji: '🏔️', label: 'mountain', desc: 'a mountain. it was here before you and will be after.' },
+  { emoji: '🌍', label: 'earth', desc: 'the earth. everything you have ever known is on this rock.' },
+  { emoji: '☀️', label: 'sun', desc: 'the sun. it is 109 times wider than earth. it does not know you exist.' },
+  { emoji: '🌌', label: 'milky way', desc: 'the milky way. 100,000 light years across. you are a rounding error.' },
+  { emoji: '🔭', label: 'observable universe', desc: 'the observable universe. 93 billion light years across. you are not in the data.' },
+];
+function solUpdate() {
+  var v = +document.getElementById('solSlider').value;
+  var idx = Math.floor(v / 100 * (solData.length - 1));
+  idx = Math.max(0, Math.min(solData.length - 1, idx));
+  var d = solData[idx];
+  document.getElementById('solEmoji').textContent = d.emoji;
+  document.getElementById('solLabel').textContent = d.label;
+  document.getElementById('solDesc').textContent = d.desc;
+  var size = 60 + v * 1.2;
+  document.getElementById('solEmoji').style.fontSize = size + 'px';
+}
+function init_sol() {
+  document.getElementById('solSlider').oninput = solUpdate;
+  solUpdate();
+}
+
+/* ===== UNIVERSE FORECAST ===== */
+var ufPlaces = [
+  { name: 'The Sun', icon: '☀️', weather: 'Extremely sunny', temp: '5,500°C surface' },
+  { name: 'Jupiter', icon: '🪐', weather: 'Stormy (300yr storm)', temp: '-145°C' },
+  { name: 'Saturn', icon: '💍', weather: 'Windy with rings', temp: '-178°C' },
+  { name: 'Black Hole', icon: ' ', weather: 'Nothing escapes', temp: '∞° (event horizon)' },
+  { name: 'Mars', icon: '🔴', weather: 'Dusty and red', temp: '-60°C' },
+  { name: 'Venus', icon: '♀️', weather: 'Crushing pressure', temp: '465°C' },
+  { name: 'Neptune', icon: '🔵', weather: 'Windy (2,100 km/h)', temp: '-214°C' },
+  { name: 'The Moon', icon: '🌙', weather: 'No weather (no atmosphere)', temp: '-173°C to 127°C' },
+  { name: 'Pluto', icon: '❄️', weather: 'Frozen and forgotten', temp: '-230°C' },
+  { name: 'Deep Space', icon: ' ', weather: 'Empty', temp: '2.7K (cosmic bg)' },
+  { name: 'Andromeda', icon: '✨', weather: 'Galaxy collision in 4.5B yrs', temp: 'N/A' },
+  { name: 'A Nebula', icon: '🌫️', weather: 'Gassy and colorful', temp: 'Varies wildly' },
+];
+function init_uf() {
+  var grid = document.getElementById('ufGrid');
+  grid.innerHTML = '';
+  ufPlaces.forEach(function (p) {
+    var card = document.createElement('div');
+    card.className = 'uf-card';
+    card.innerHTML = '<div class="icon">' + p.icon + '</div><div class="place">' + p.name + '</div><div class="weather">' + p.weather + '</div><div class="temp">' + p.temp + '</div>';
+    grid.appendChild(card);
+  });
+}
+
+/* ===== DRAW PERFECT CIRCLE ===== */
+var pcCanvas, pcCtx, pcDrawing = false, pcPoints = [];
+function pcInit() {
+  pcCanvas = document.getElementById('pcCanvas');
+  if (!pcCanvas) return;
+  pcCtx = pcCanvas.getContext('2d');
+  pcCtx.fillStyle = '#0a0913';
+  pcCtx.fillRect(0, 0, pcCanvas.width, pcCanvas.height);
+  pcCanvas.onmousedown = function (e) { pcDrawing = true; pcPoints = []; pcAddPoint(e); };
+  pcCanvas.onmousemove = function (e) { if (pcDrawing) pcAddPoint(e); };
+  pcCanvas.onmouseup = function () { if (pcDrawing) { pcDrawing = false; pcScore(); } };
+  pcCanvas.onmouseleave = function () { if (pcDrawing) { pcDrawing = false; pcScore(); } };
+}
+function pcAddPoint(e) {
+  var rect = pcCanvas.getBoundingClientRect();
+  var x = (e.clientX - rect.left) * (pcCanvas.width / rect.width);
+  var y = (e.clientY - rect.top) * (pcCanvas.height / rect.height);
+  pcPoints.push({ x: x, y: y });
+  pcCtx.fillStyle = '#7c5cff';
+  pcCtx.fillRect(x - 1, y - 1, 3, 3);
+}
+function pcScore() {
+  if (pcPoints.length < 10) { document.getElementById('pcGrade').textContent = 'too few points. try again.'; return; }
+  // find center (average)
+  var cx = 0, cy = 0;
+  pcPoints.forEach(function (p) { cx += p.x; cy += p.y; });
+  cx /= pcPoints.length; cy /= pcPoints.length;
+  // radii
+  var radii = pcPoints.map(function (p) { return Math.hypot(p.x - cx, p.y - cy); });
+  var avg = radii.reduce(function (a, b) { return a + b; }, 0) / radii.length;
+  var variance = radii.reduce(function (a, r) { return a + Math.pow(r - avg, 2); }, 0) / radii.length;
+  var std = Math.sqrt(variance);
+  var score = Math.max(0, Math.round(100 - (std / avg) * 200));
+  // check closure
+  var first = pcPoints[0], last = pcPoints[pcPoints.length - 1];
+  var gap = Math.hypot(first.x - last.x, first.y - last.y);
+  var closure = gap < avg * 0.3 ? 1 : 0.7;
+  score = Math.round(score * closure);
+  document.getElementById('pcScore').textContent = score + '%';
+  var grade = score >= 95 ? 'suspiciously perfect' : score >= 85 ? 'excellent' : score >= 70 ? 'good' : score >= 50 ? 'okay' : score >= 30 ? 'rough' : 'that is not a circle';
+  document.getElementById('pcGrade').textContent = grade;
+}
+function pcClear() {
+  pcCtx.fillStyle = '#0a0913';
+  pcCtx.fillRect(0, 0, pcCanvas.width, pcCanvas.height);
+  pcPoints = [];
+  document.getElementById('pcScore').textContent = '—';
+  document.getElementById('pcGrade').textContent = 'draw a circle to get scored';
+}
+function init_pc() { pcInit(); }
+
+/* ===== DRAW LOGOS FROM MEMORY ===== */
+var lfmLogos = [
+  { name: 'Nike Swoosh', hint: 'just do it' },
+  { name: 'Apple', hint: 'bitten fruit' },
+  { name: 'McDonalds', hint: 'golden arches' },
+  { name: 'Twitter/X', hint: 'bird or X' },
+  { name: 'Starbucks', hint: 'mermaid in circle' },
+  { name: 'Adidas', hint: 'three stripes' },
+  { name: 'Target', hint: 'bullseye' },
+  { name: 'Batman', hint: 'bat silhouette' },
+  { name: 'PlayStation', hint: 'P S X O triangle' },
+  { name: 'Pepsi', hint: 'red white blue circle' },
+];
+var lfmIdx = 0, lfmCanvas, lfmCtx, lfmDrawing = false, lfmPoints = [];
+function lfmInit() {
+  lfmCanvas = document.getElementById('lfmCanvas');
+  if (!lfmCanvas) return;
+  lfmCtx = lfmCanvas.getContext('2d');
+  lfmCtx.fillStyle = '#fff';
+  lfmCtx.fillRect(0, 0, lfmCanvas.width, lfmCanvas.height);
+  lfmCanvas.onmousedown = function (e) { lfmDrawing = true; lfmPoints = []; lfmAddPoint(e); };
+  lfmCanvas.onmousemove = function (e) { if (lfmDrawing) lfmAddPoint(e); };
+  lfmCanvas.onmouseup = function () { if (lfmDrawing) { lfmDrawing = false; lfmScoreDraw(); } };
+  lfmCanvas.onmouseleave = function () { if (lfmDrawing) { lfmDrawing = false; lfmScoreDraw(); } };
+  document.getElementById('lfmPrompt').textContent = lfmLogos[lfmIdx].name;
+}
+function lfmAddPoint(e) {
+  var rect = lfmCanvas.getBoundingClientRect();
+  var x = (e.clientX - rect.left) * (lfmCanvas.width / rect.width);
+  var y = (e.clientY - rect.top) * (lfmCanvas.height / rect.height);
+  lfmPoints.push({ x: x, y: y });
+  lfmCtx.fillStyle = '#000';
+  lfmCtx.fillRect(x - 1.5, y - 1.5, 3, 3);
+}
+function lfmScoreDraw() {
+  if (lfmPoints.length < 5) { document.getElementById('lfmScore').textContent = 'draw more.'; return; }
+  var score = Math.min(99, 40 + Math.floor(lfmPoints.length / 3));
+  var grade = score >= 90 ? 'impressive' : score >= 70 ? 'recognizable' : score >= 50 ? 'vague' : 'what is that';
+  document.getElementById('lfmScore').textContent = score + '% · ' + grade;
+}
+function lfmNext() {
+  lfmIdx = (lfmIdx + 1) % lfmLogos.length;
+  document.getElementById('lfmPrompt').textContent = lfmLogos[lfmIdx].name;
+  lfmClear();
+}
+function lfmClear() {
+  lfmCtx.fillStyle = '#fff';
+  lfmCtx.fillRect(0, 0, lfmCanvas.width, lfmCanvas.height);
+  lfmPoints = [];
+  document.getElementById('lfmScore').textContent = 'draw to get scored';
+}
+function init_lfm() { lfmInit(); }
+
+/* ===== CONSTELLATION DRAW ===== */
+var constCanvas, constCtx, constStars = [], constLines = [], constSelected = null;
+function constInit() {
+  constCanvas = document.getElementById('constCanvas');
+  if (!constCanvas) return;
+  constCtx = constCanvas.getContext('2d');
+  // generate stars
+  constStars = [];
+  for (var i = 0; i < 40; i++) {
+    constStars.push({ x: 20 + Math.random() * 280, y: 20 + Math.random() * 280, r: 1 + Math.random() * 2 });
+  }
+  constLines = [];
+  constSelected = null;
+  constDraw();
+  constCanvas.onclick = function (e) {
+    var rect = constCanvas.getBoundingClientRect();
+    var x = (e.clientX - rect.left) * (constCanvas.width / rect.width);
+    var y = (e.clientY - rect.top) * (constCanvas.height / rect.height);
+    // find nearest star
+    var nearest = null, nd = 15;
+    constStars.forEach(function (s, i) {
+      var d = Math.hypot(s.x - x, s.y - y);
+      if (d < nd) { nd = d; nearest = i; }
+    });
+    if (nearest === null) return;
+    if (constSelected === null) {
+      constSelected = nearest;
+    } else {
+      if (constSelected !== nearest) constLines.push([constSelected, nearest]);
+      constSelected = nearest;
+    }
+    constDraw();
+  };
+}
+function constDraw() {
+  if (!constCtx) return;
+  constCtx.fillStyle = '#050816';
+  constCtx.fillRect(0, 0, constCanvas.width, constCanvas.height);
+  // lines
+  constCtx.strokeStyle = 'rgba(124,92,255,0.6)';
+  constCtx.lineWidth = 1.5;
+  constLines.forEach(function (l) {
+    constCtx.beginPath();
+    constCtx.moveTo(constStars[l[0]].x, constStars[l[0]].y);
+    constCtx.lineTo(constStars[l[1]].x, constStars[l[1]].y);
+    constCtx.stroke();
+  });
+  // stars
+  constStars.forEach(function (s, i) {
+    constCtx.beginPath();
+    constCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    constCtx.fillStyle = i === constSelected ? '#ff5a8a' : '#fff';
+    constCtx.fill();
+    if (i === constSelected) {
+      constCtx.strokeStyle = '#ff5a8a';
+      constCtx.lineWidth = 1;
+      constCtx.beginPath();
+      constCtx.arc(s.x, s.y, s.r + 4, 0, Math.PI * 2);
+      constCtx.stroke();
+    }
+  });
+}
+function constSave() {
+  var name = document.getElementById('constName').value.trim() || 'unnamed';
+  var list = document.getElementById('constList');
+  var item = document.createElement('div');
+  item.textContent = name + ' (' + constLines.length + ' lines)';
+  list.appendChild(item);
+}
+function constClear() {
+  constLines = [];
+  constSelected = null;
+  constDraw();
+}
+function init_const() { constInit(); }
     /* NEW-GAMES-JS-MARKER */
     /* ===== GAME INIT HOOK ===== */
     (function () {
