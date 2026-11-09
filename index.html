@@ -590,6 +590,80 @@
     .fb-fps input { width: 100px; accent-color: #7c5cff; }
     .fb-onion { display: flex; align-items: center; gap: 6px; justify-content: center; font-size: 11px; color: var(--muted); margin: 4px 0; }
 
+    /* STREAM-CSS-MARKER */
+    /* stream attention simulator */
+    .sa-stage {
+      border-radius: 12px; border: 1px solid var(--border); overflow: hidden;
+      background: #0e0e10; display: flex; flex-direction: column;
+    }
+    .sa-header {
+      padding: 8px 12px; background: rgba(145,70,255,0.15); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px; font-size: 12px;
+    }
+    .sa-streamer { font-weight: 700; color: #9146ff; }
+    .sa-viewers { color: var(--muted); font-size: 11px; }
+    .sa-live { color: #eb0400; font-weight: 700; font-size: 11px; animation: sa-blink 1s infinite; }
+    @keyframes sa-blink { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .sa-body { display: flex; flex: 1; min-height: 0; }
+    .sa-video {
+      flex: 1; background: linear-gradient(135deg, #1a1436, #0a0913);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 48px; position: relative; min-height: 200px;
+    }
+    .sa-streamer-avatar { font-size: 64px; }
+    .sa-status { position: absolute; bottom: 8px; left: 8px; font-size: 11px; color: var(--muted); background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 4px; }
+    .sa-attention-bar {
+      position: absolute; top: 8px; right: 8px; width: 120px;
+      background: rgba(0,0,0,0.6); border-radius: 8px; padding: 4px 8px; font-size: 10px;
+    }
+    .sa-attention-fill { height: 6px; border-radius: 3px; background: linear-gradient(90deg, #9146ff, #ff5a8a); transition: width 0.3s; margin-top: 2px; }
+    .sa-chat {
+      width: 260px; border-left: 1px solid var(--border); display: flex; flex-direction: column;
+      background: #18181b;
+    }
+    .sa-messages {
+      flex: 1; overflow-y: auto; padding: 8px; font-size: 12px; line-height: 1.5;
+      max-height: 280px; min-height: 200px;
+    }
+    .sa-msg { margin-bottom: 4px; word-wrap: break-word; }
+    .sa-msg .name { font-weight: 700; }
+    .sa-msg .text { color: #efeff1; }
+    .sa-msg .donation { color: #9146ff; font-weight: 700; }
+    .sa-msg .highlight { background: rgba(145,70,255,0.2); padding: 2px 4px; border-radius: 3px; }
+    .sa-msg .mod { color: #00ad9c; }
+    .sa-input-row {
+      display: flex; gap: 4px; padding: 8px; border-top: 1px solid var(--border);
+    }
+    .sa-input {
+      flex: 1; padding: 6px 8px; border-radius: 4px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); color: var(--text); font-size: 12px;
+    }
+    .sa-send { padding: 6px 12px; border-radius: 4px; border: none; background: #9146ff; color: #fff; cursor: pointer; font-size: 12px; }
+    .sa-actions {
+      display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; padding: 8px;
+      border-top: 1px solid var(--border); background: rgba(0,0,0,0.3);
+    }
+    .sa-action {
+      padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; font-size: 11px;
+    }
+    .sa-action:disabled { opacity: 0.4; cursor: not-allowed; }
+    .sa-action.donate { border-color: #9146ff; color: #9146ff; }
+    .sa-action.sub { border-color: #ff5a8a; color: #ff5a8a; }
+    .sa-stats {
+      display: flex; gap: 12px; justify-content: center; padding: 6px; font-size: 11px; color: var(--muted);
+    }
+    .sa-stats span { color: var(--text); font-weight: 600; }
+    .sa-event {
+      text-align: center; padding: 6px; font-size: 12px; color: #ff5a8a; font-weight: 600;
+      background: rgba(255,90,138,0.1); border-bottom: 1px solid var(--border);
+    }
+    .sa-win {
+      text-align: center; padding: 20px; font-size: 18px; font-weight: 800;
+    }
+    .sa-lose { text-align: center; padding: 20px; font-size: 16px; color: var(--muted); }
+    .sa-cooldown { font-size: 9px; color: var(--muted); }
+
     /* NEW-GAMES-CSS-MARKER */
     /* ===== NEW GAMES ===== */
     .cap-stage {
@@ -838,6 +912,12 @@
         <span class="badge">ANIMATE</span>
         <h3>Flipbook Animator</h3>
         <p>Draw frame by frame. Play it back. Make something move.</p>
+      </div>
+<!-- STREAM-CARDS-MARKER -->
+      <div class="game-card" onclick="showGame('stream')">
+        <span class="badge">SOCIAL</span>
+        <h3>Get The Streamer's Attention</h3>
+        <p>You're one of 200 viewers. Donate, chat, sub. Get noticed before the stream ends.</p>
       </div>
 <!-- NEW-GAMES-CARDS-MARKER -->
       <div class="game-card" onclick="showGame('captcha')">
@@ -1229,6 +1309,52 @@
         <span id="fbFpsVal">8</span>
       </div>
       <div style="text-align:center;font-size:11px;color:var(--muted)" id="fbMsg">frame 1 of 1</div>
+    </div>
+  </div>
+  <!-- STREAM-VIEWS-MARKER -->
+  <!-- STREAM ATTENTION SIMULATOR -->
+  <div class="game-view" id="stream">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Get The Streamer's Attention</h2>
+    <p style="color:var(--muted);margin:8px 0;text-align:center">you're one of 200 viewers. donate, chat, sub. get noticed before the stream ends.</p>
+    <div class="sa-stage">
+      <div class="sa-header">
+        <span class="sa-live">● LIVE</span>
+        <span class="sa-streamer" id="saName">xQcFan_99</span>
+        <span class="sa-viewers" id="saViewers">200 viewers</span>
+      </div>
+      <div class="sa-event" id="saEvent">stream started. chat is moving fast.</div>
+      <div class="sa-body">
+        <div class="sa-video">
+          <div class="sa-streamer-avatar" id="saAvatar">🎮</div>
+          <div class="sa-status" id="saStatus">playing a game</div>
+          <div class="sa-attention-bar">
+            <div>attention</div>
+            <div class="sa-attention-fill" id="saBar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="sa-chat">
+          <div class="sa-messages" id="saMessages"></div>
+          <div class="sa-input-row">
+            <input class="sa-input" id="saInput" placeholder="say something..." onkeydown="if(event.key==='Enter')saChat()">
+            <button class="sa-send" onclick="saChat()">send</button>
+          </div>
+        </div>
+      </div>
+      <div class="sa-actions">
+        <button class="sa-action donate" onclick="saDonate(5)">$5 donate</button>
+        <button class="sa-action donate" onclick="saDonate(20)">$20 donate</button>
+        <button class="sa-action donate" onclick="saDonate(50)">$50 donate</button>
+        <button class="sa-action sub" onclick="saSub()">subscribe ($5/mo)</button>
+        <button class="sa-action" onclick="saRaid()">raid (bring friends)</button>
+        <button class="sa-action" onclick="saClip()">clip moment</button>
+      </div>
+      <div class="sa-stats">
+        <div>your $: <span id="saMoney">$0</span></div>
+        <div>attention: <span id="saAtt">0%</span></div>
+        <div>time left: <span id="saTime">120s</span></div>
+        <div>chat speed: <span id="saSpeed">fast</span></div>
+      </div>
     </div>
   </div>
   <!-- NEW-GAMES-VIEWS-MARKER -->
@@ -3438,6 +3564,301 @@ function init_flipbook() {
   fbPlaying = false;
   if (fbPlayTimer) { clearInterval(fbPlayTimer); fbPlayTimer = null; }
   fbInit();
+}
+    /* STREAM-JS-MARKER */
+/* ===== STREAM ATTENTION SIMULATOR ===== */
+var saState = {
+  name: '', avatar: '', attention: 0, money: 0, timeLeft: 120,
+  viewers: 200, speed: 'fast', timer: null, chatTimer: null,
+  eventTimer: null, cooldowns: {}, won: false, lost: false,
+  chatMessages: [], donated: false, subbed: false, raided: false, clipped: false
+};
+
+var saStreamers = [
+  { name: 'xQcFan_99', avatar: '🎮', game: 'playing valorant' },
+  { name: 'PokimaneVibes', avatar: '🌸', game: 'just chatting' },
+  { name: 'NinjaClone', avatar: '🥷', game: 'fortnite' },
+  { name: 'LirikAlt', avatar: '🎸', game: 'variety' },
+  { name: 'ShroudWannabe', avatar: '🔫', game: 'apex legends' },
+];
+
+var saChatNames = ['xXDarkLordXx', 'gamer123', 'noobmaster', 'StreamFan', 'viewer42', 'chatmod', 'lurker99', 'donation_bot', 'random_user', 'twitch_viewer', 'clipper', 'hype_man', 'quiet_lurker', 'spam_king', 'emoji_guy', 'new_sub', 'og_viewer', 'raid_leader'];
+var saChatMsgs = [
+  'lol', 'LUL', 'W', 'L', 'gg', 'nice', 'PogChamp', 'Kappa', 'first', 'hey', 'what game is this',
+  'can you play X', 'donate for shoutout', 'raid me', 'clip that', 'hype', 'GG EZ', 'lets gooo',
+  'monkaS', 'KEKW', 'POGGERS', 'raid raid raid', 'sub hype', 'who is this', 'new here',
+  'how long stream', 'followed', 'first time', 'love the stream', 'more content', 'play with me',
+];
+
+var saEvents = [
+  { text: 'streamer is focused on the game. chat is moving fast.', speed: 'fast', viewers: 0 },
+  { text: 'streamer reads a donation! chat slows down.', speed: 'slow', viewers: -20 },
+  { text: 'streamer gets a kill. chat goes crazy!', speed: 'very fast', viewers: 30 },
+  { text: 'streamer takes a break. chat is relaxed.', speed: 'slow', viewers: -10 },
+  { text: 'big raid incoming! chat explodes.', speed: 'very fast', viewers: 80 },
+  { text: 'streamer is talking to chat. good time to donate!', speed: 'medium', viewers: 0 },
+  { text: 'streamer is distracted. low attention window.', speed: 'fast', viewers: 0 },
+  { text: 'streamer mentions a giveaway. chat is hyped.', speed: 'very fast', viewers: 50 },
+];
+
+function saInit() {
+  saState = {
+    name: '', avatar: '', attention: 0, money: 0, timeLeft: 120,
+    viewers: 200, speed: 'fast', timer: null, chatTimer: null,
+    eventTimer: null, cooldowns: {}, won: false, lost: false,
+    chatMessages: [], donated: false, subbed: false, raided: false, clipped: false
+  };
+
+  var st = saStreamers[Math.floor(Math.random() * saStreamers.length)];
+  saState.name = st.name;
+  saState.avatar = st.avatar;
+  document.getElementById('saName').textContent = st.name;
+  document.getElementById('saAvatar').textContent = st.avatar;
+  document.getElementById('saStatus').textContent = st.game;
+  document.getElementById('saViewers').textContent = '200 viewers';
+  document.getElementById('saMessages').innerHTML = '';
+  document.getElementById('saEvent').textContent = 'stream started. chat is moving fast.';
+  document.getElementById('saBar').style.width = '0%';
+  document.getElementById('saAtt').textContent = '0%';
+  document.getElementById('saMoney').textContent = '$0';
+  document.getElementById('saTime').textContent = '120s';
+  document.getElementById('saSpeed').textContent = 'fast';
+
+  // clear timers
+  if (saState.timer) clearInterval(saState.timer);
+  if (saState.chatTimer) clearInterval(saState.chatTimer);
+  if (saState.eventTimer) clearInterval(saState.eventTimer);
+
+  // chat spam
+  saState.chatTimer = setInterval(saSpamChat, saChatInterval());
+
+  // events every 15-25s
+  saState.eventTimer = setInterval(saRandomEvent, 15000 + Math.random() * 10000);
+
+  // countdown
+  saState.timer = setInterval(function () {
+    if (saState.won || saState.lost) return;
+    saState.timeLeft--;
+    document.getElementById('saTime').textContent = saState.timeLeft + 's';
+    // attention decays slightly
+    saState.attention = Math.max(0, saState.attention - 0.3);
+    saUpdateBar();
+    if (saState.timeLeft <= 0) {
+      saEnd(false);
+    }
+  }, 1000);
+
+  saSpamChat();
+}
+
+function saChatInterval() {
+  var speeds = { 'very fast': 400, 'fast': 800, 'medium': 1500, 'slow': 3000 };
+  return speeds[saState.speed] || 800;
+}
+
+function saRestartChatTimer() {
+  if (saState.chatTimer) clearInterval(saState.chatTimer);
+  saState.chatTimer = setInterval(saSpamChat, saChatInterval());
+}
+
+function saSpamChat() {
+  var container = document.getElementById('saMessages');
+  var count = saState.speed === 'very fast' ? 3 : saState.speed === 'fast' ? 2 : 1;
+  for (var i = 0; i < count; i++) {
+    var name = saChatNames[Math.floor(Math.random() * saChatNames.length)];
+    var msg = saChatMsgs[Math.floor(Math.random() * saChatMsgs.length)];
+    var div = document.createElement('div');
+    div.className = 'sa-msg';
+    div.innerHTML = '<span class="name" style="color:hsl(' + (Math.random()*360) + ',70%,60%)">' + name + ':</span> <span class="text">' + msg + '</span>';
+    container.appendChild(div);
+  }
+  container.scrollTop = container.scrollHeight;
+  // keep max 60 messages
+  while (container.children.length > 60) container.removeChild(container.firstChild);
+}
+
+function saChat() {
+  if (saState.won || saState.lost) return;
+  var input = document.getElementById('saInput');
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  var container = document.getElementById('saMessages');
+  var div = document.createElement('div');
+  div.className = 'sa-msg';
+  div.innerHTML = '<span class="name" style="color:#9146ff">You:</span> <span class="text highlight">' + saEscape(text) + '</span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+
+  // attention gain based on message quality
+  var gain = 2;
+  var lower = text.toLowerCase();
+  if (lower.indexOf('donate') !== -1 || lower.indexOf('sub') !== -1) gain += 1;
+  if (text.length > 30) gain += 1;
+  if (text.indexOf('!') !== -1) gain += 0.5;
+  // random chance streamer reads it
+  if (Math.random() < 0.15) {
+    gain += 8;
+    saAddSystemMsg('the streamer read your message!');
+  }
+  saState.attention = Math.min(100, saState.attention + gain);
+  saUpdateBar();
+  saCheckWin();
+}
+
+function saEscape(t) {
+  return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function saDonate(amount) {
+  if (saState.won || saState.lost) return;
+  if (saState.money < 0) return;
+  saState.money -= amount;
+  document.getElementById('saMoney').textContent = '$' + saState.money;
+  var gain = amount * 1.5;
+  if (amount >= 50) gain += 15;
+  if (amount >= 20) gain += 5;
+  saState.attention = Math.min(100, saState.attention + gain);
+  saUpdateBar();
+
+  var container = document.getElementById('saMessages');
+  var div = document.createElement('div');
+  div.className = 'sa-msg';
+  div.innerHTML = '<span class="name donation">You donated $' + amount + '!</span> <span class="text donation">PogChamp</span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+
+  if (Math.random() < 0.4) {
+    setTimeout(function () {
+      saAddSystemMsg('the streamer thanked you for the $' + amount + ' donation!');
+      saState.attention = Math.min(100, saState.attention + 10);
+      saUpdateBar();
+      saCheckWin();
+    }, 1500);
+  }
+  saCheckWin();
+}
+
+function saSub() {
+  if (saState.won || saState.lost) return;
+  if (saState.subbed) { saAddSystemMsg('you already subbed.'); return; }
+  saState.subbed = true;
+  saState.money -= 5;
+  document.getElementById('saMoney').textContent = '$' + saState.money;
+  saState.attention = Math.min(100, saState.attention + 12);
+  saUpdateBar();
+  var container = document.getElementById('saMessages');
+  var div = document.createElement('div');
+  div.className = 'sa-msg';
+  div.innerHTML = '<span class="name sub" style="color:#ff5a8a">You subscribed!</span> <span class="text">new sub hype!</span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  if (Math.random() < 0.5) {
+    setTimeout(function () {
+      saAddSystemMsg('streamer: "welcome to the family, new sub!"');
+      saState.attention = Math.min(100, saState.attention + 8);
+      saUpdateBar();
+      saCheckWin();
+    }, 2000);
+  }
+  saCheckWin();
+}
+
+function saRaid() {
+  if (saState.won || saState.lost) return;
+  if (saState.raided) { saAddSystemMsg('you already raided.'); return; }
+  saState.raided = true;
+  saState.attention = Math.min(100, saState.attention + 25);
+  saState.viewers += 50;
+  document.getElementById('saViewers').textContent = saState.viewers + ' viewers';
+  saUpdateBar();
+  var container = document.getElementById('saMessages');
+  var div = document.createElement('div');
+  div.className = 'sa-msg';
+  div.innerHTML = '<span class="name" style="color:#00ad9c">You raided with 50 viewers!</span> <span class="text">RAID RAID RAID</span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  saAddSystemMsg('streamer: "oh wow a raid! thank you!"');
+  saState.attention = Math.min(100, saState.attention + 10);
+  saUpdateBar();
+  saCheckWin();
+}
+
+function saClip() {
+  if (saState.won || saState.lost) return;
+  if (saState.clipped) { saAddSystemMsg('you already clipped.'); return; }
+  saState.clipped = true;
+  saState.attention = Math.min(100, saState.attention + 6);
+  saUpdateBar();
+  saAddSystemMsg('you clipped a moment! it might go viral.');
+  if (Math.random() < 0.3) {
+    setTimeout(function () {
+      saAddSystemMsg('your clip got 1000 views! streamer noticed.');
+      saState.attention = Math.min(100, saState.attention + 12);
+      saUpdateBar();
+      saCheckWin();
+    }, 3000);
+  }
+  saCheckWin();
+}
+
+function saAddSystemMsg(text) {
+  var container = document.getElementById('saMessages');
+  var div = document.createElement('div');
+  div.className = 'sa-msg';
+  div.innerHTML = '<span class="name" style="color:#ff5a8a">[system]</span> <span class="text" style="color:#ff5a8a;font-style:italic">' + text + '</span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function saRandomEvent() {
+  if (saState.won || saState.lost) return;
+  var ev = saEvents[Math.floor(Math.random() * saEvents.length)];
+  document.getElementById('saEvent').textContent = ev.text;
+  saState.speed = ev.speed;
+  saState.viewers = Math.max(50, saState.viewers + ev.viewers);
+  document.getElementById('saViewers').textContent = saState.viewers + ' viewers';
+  document.getElementById('saSpeed').textContent = ev.speed;
+  saRestartChatTimer();
+  // attention boost if chat slows
+  if (ev.speed === 'slow') {
+    saState.attention = Math.min(100, saState.attention + 3);
+    saUpdateBar();
+  }
+}
+
+function saUpdateBar() {
+  document.getElementById('saBar').style.width = saState.attention + '%';
+  document.getElementById('saAtt').textContent = Math.round(saState.attention) + '%';
+}
+
+function saCheckWin() {
+  if (saState.attention >= 100 && !saState.won) {
+    saState.won = true;
+    saEnd(true);
+  }
+}
+
+function saEnd(won) {
+  if (saState.timer) clearInterval(saState.timer);
+  if (saState.chatTimer) clearInterval(saState.chatTimer);
+  if (saState.eventTimer) clearInterval(saState.eventTimer);
+  var container = document.getElementById('saMessages');
+  if (won) {
+    saAddSystemMsg('🎉 THE STREAMER NOTICED YOU! "hey, thanks for all the support!"');
+    document.getElementById('saEvent').textContent = 'you got noticed! streamer is reading your messages now.';
+    document.getElementById('saEvent').style.background = 'rgba(80,200,120,0.15)';
+    document.getElementById('saEvent').style.color = '#50c878';
+  } else {
+    saAddSystemMsg('stream ended. the streamer never noticed you. better luck next time.');
+    document.getElementById('saEvent').textContent = 'stream ended. you were just another viewer.';
+    document.getElementById('saEvent').style.background = 'rgba(255,90,138,0.1)';
+    document.getElementById('saEvent').style.color = '#ff5a8a';
+  }
+}
+
+function init_stream() {
+  saInit();
 }
     /* NEW-GAMES-JS-MARKER */
     /* ===== GAME INIT HOOK ===== */
