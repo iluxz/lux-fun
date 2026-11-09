@@ -299,6 +299,50 @@
     }
 
 
+    /* FLING-CSS-MARKER */
+    /* fling the cube */
+    .fl-hud {
+      display: flex; gap: 22px; justify-content: center; flex-wrap: wrap;
+      font-size: 12px; color: var(--muted); margin: 10px 0 12px;
+    }
+    .fl-hud b { display: block; font-size: 18px; color: var(--text); font-weight: 600; letter-spacing: 0.5px; }
+    .fl-k { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+    .fl-canvas {
+      display: block; width: 100%; height: 320px; border-radius: 12px;
+      border: 1px solid var(--border); background: #0a0913; touch-action: none;
+      cursor: grab;
+    }
+    .fl-canvas:active { cursor: grabbing; }
+    .fl-msg {
+      text-align: center; font-size: 13px; color: var(--muted);
+      margin: 12px 0; min-height: 20px;
+    }
+    .fl-msg b { color: var(--accent2); }
+    .fl-gym {
+      border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px;
+      background: rgba(255,255,255,0.025); margin: 6px 0 4px;
+    }
+    .fl-gym-head {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+    }
+    .fl-bar {
+      position: relative; height: 42px; margin: 14px 0 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.03); overflow: hidden;
+    }
+    .fl-zone {
+      position: absolute; top: 0; bottom: 0;
+      background: rgba(80,200,120,0.2);
+      border-left: 1px solid #50c878; border-right: 1px solid #50c878;
+    }
+    .fl-mark {
+      position: absolute; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(180deg, #fff, var(--accent2));
+      box-shadow: 0 0 12px rgba(255,90,138,0.9);
+    }
+    .fl-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .fl-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; min-height: 16px; }
+    .fl-hidden { display: none !important; }
     /* NEW-GAMES-CSS-MARKER */
     /* ===== NEW GAMES ===== */
     .cap-stage {
@@ -512,6 +556,12 @@
         <h3>Precision Bar</h3>
         <p>Stop the sweeping bar inside the green zone. The zone shrinks. The bar lies.</p>
       </div>
+<!-- FLING-CARDS-MARKER -->
+      <div class="game-card" onclick="showGame('fling')">
+        <span class="badge">PROGRESS</span>
+        <h3>Fling The Cube</h3>
+        <p>Your slingshot is weak. The other side is 1000m away. Train at the gym, get stronger, throw again.</p>
+      </div>
     </div>
   </div>
 
@@ -678,6 +728,11 @@
           <div class="admin-status" id="st-cap"></div>
         </div>
         <div class="admin-item">
+          <h4>FLING THE CUBE</h4>
+          <button onclick="tasFling()">max strength</button>
+          <div class="admin-status" id="st-fling"></div>
+        </div>
+        <div class="admin-item">
           <h4>EVERYTHING</h4>
           <button onclick="tasAll()">run all tas</button>
           <button onclick="tasClear()" style="margin-top:6px">clear log</button>
@@ -752,6 +807,41 @@
       <button class="cap-btn" onclick="initPrec()">restart</button>
     </div>
     <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:10px" id="precMsg"></div>
+  </div>
+  <!-- FLING-VIEWS-MARKER -->
+  <!-- Fling The Cube -->
+  <div class="game-view" id="fling">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Fling The Cube</h2>
+    <p style="color:var(--muted);margin:8px 0">Drag back from the slingshot, let go, watch it land short. Then hit the gym.</p>
+    <div class="fl-hud">
+      <div><span class="fl-k">strength</span><b id="flStr">1.0</b></div>
+      <div><span class="fl-k">day</span><b id="flDay">1</b></div>
+      <div><span class="fl-k">record</span><b id="flBest">0m</b></div>
+    </div>
+    <canvas id="flCanvas" class="fl-canvas"></canvas>
+    <div class="fl-msg" id="flMsg">drag back from the cube and release</div>
+
+    <div class="fl-gym">
+      <div class="fl-gym-head">
+        <span>lux gym &nbsp;·&nbsp; day <span id="flGymDay">1</span></span>
+        <span id="flGymState">open</span>
+      </div>
+      <div id="flGymIdle">
+        <div class="fl-row" style="margin-top:12px">
+          <button class="cap-btn" id="flTrainBtn" onclick="flTrainStart()">train (5 reps)</button>
+          <button class="cap-btn" id="flSleepBtn" onclick="flSleep()" disabled>sleep → next day</button>
+        </div>
+        <div class="fl-note" id="flGymNote">one session per day. train, then sleep.</div>
+      </div>
+      <div id="flGymRun" class="fl-hidden">
+        <div class="fl-bar"><div class="fl-zone" id="flZone"></div><div class="fl-mark" id="flMark"></div></div>
+        <div class="fl-row">
+          <button class="cap-btn" id="flRepBtn" onclick="flRep()">rep</button>
+          <span class="fl-note" style="margin:0;align-self:center" id="flRepNote">rep 1 / 5</span>
+        </div>
+      </div>
+    </div>
   </div>
   <script>
     // Navigation
@@ -1403,12 +1493,623 @@
       tasGuess();
       tasColor();
       tasSkipCaptcha();
+      tasFling();
       st('st-all', 'all tas executed.');
     }
     function tasClear() {
-      ['st-pw','st-spend','st-clicker','st-reaction','st-memory','st-typing','st-guess','st-color','st-cap','st-all'].forEach(function (id) { st(id, ''); });
+      ['st-pw','st-spend','st-clicker','st-reaction','st-memory','st-typing','st-guess','st-color','st-cap','st-fling','st-all'].forEach(function (id) { st(id, ''); });
     }
 
+    /* FLING-JS-MARKER */
+    /* ===== FLING THE CUBE ===== */
+    var FL_GOAL = 1000, FL_WORLD = 1160, FL_VIEW = 300, FL_START = 10;
+
+    var fl = {
+      str: 1, day: 1, best: 0, trainedToday: false,
+      state: 'idle',       // idle | aiming | flying | landed | win
+      power: 0,
+      cam: 0, camTarget: 0,
+      cube: { x: FL_START, y: 0, rot: 0, scale: 1 },
+      trail: [], dust: [],
+      fly: null,
+      drag: null,
+      t: 0,
+      raf: 0,
+      cssW: 600, cssH: 320,
+      canvas: null, ctx: null,
+      lastMsg: ''
+    };
+
+    var flGym = { active: false, rep: 0, reps: 5, pos: 0, dir: 1, speed: 0.85, zone: [0.35, 0.65], gain: 0, cool: 0 };
+
+    function flLoad() {
+      fl.str = 1; fl.day = 1; fl.best = 0; fl.trainedToday = false; fl.state = 'idle';
+      try {
+        var raw = localStorage.getItem('luxfun_fling');
+        if (!raw) return;
+        var d = JSON.parse(raw);
+        if (typeof d.str === 'number' && isFinite(d.str)) fl.str = Math.max(1, d.str);
+        if (typeof d.day === 'number' && isFinite(d.day)) fl.day = Math.max(1, Math.round(d.day));
+        if (typeof d.best === 'number' && isFinite(d.best)) fl.best = Math.max(0, d.best);
+        if (typeof d.trained === 'boolean') fl.trainedToday = d.trained;
+        if (d.won) fl.state = 'win';
+      } catch (e) {}
+    }
+
+    function flSave() {
+      try {
+        localStorage.setItem('luxfun_fling', JSON.stringify({
+          str: fl.str, day: fl.day, best: fl.best,
+          trained: fl.trainedToday, won: fl.state === 'win'
+        }));
+      } catch (e) {}
+    }
+
+    function flHud() {
+      var s = document.getElementById('flStr');
+      if (!s) return;
+      s.textContent = fl.str.toFixed(1);
+      document.getElementById('flDay').textContent = fl.day;
+      document.getElementById('flBest').textContent = Math.round(fl.best) + 'm';
+      var gd = document.getElementById('flGymDay');
+      if (gd) gd.textContent = fl.day;
+      var gs = document.getElementById('flGymState');
+      if (gs) gs.textContent = fl.trainedToday ? 'trained' : 'open';
+      var sb = document.getElementById('flSleepBtn');
+      if (sb) sb.disabled = !fl.trainedToday;
+      var tb = document.getElementById('flTrainBtn');
+      if (tb) tb.disabled = fl.trainedToday || flGym.active;
+    }
+
+    function flMsg(html) {
+      var el = document.getElementById('flMsg');
+      if (el) el.innerHTML = html;
+    }
+
+    function flResize() {
+      var c = fl.canvas;
+      if (!c) return;
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      fl.cssW = c.clientWidth || 600;
+      fl.cssH = c.clientHeight || 320;
+      c.width = Math.round(fl.cssW * dpr);
+      c.height = Math.round(fl.cssH * dpr);
+      var ctx = c.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      fl.ctx = ctx;
+    }
+
+    function flPx(m) { return (m - fl.cam) * (fl.cssW / FL_VIEW); }
+    function flMpp() { return FL_VIEW / fl.cssW; }
+
+    function init_fling() {
+      fl.canvas = document.getElementById('flCanvas');
+      if (!fl.canvas) return;
+      flLoad();
+      flResize();
+      flHud();
+      flGym.active = false;
+      document.getElementById('flGymIdle').classList.remove('fl-hidden');
+      document.getElementById('flGymRun').classList.add('fl-hidden');
+      if (fl.state !== 'win') {
+        fl.state = 'idle';
+        fl.cam = 0;
+        fl.camTarget = 0;
+        fl.cube.x = FL_START;
+        fl.cube.rot = 0;
+        fl.cube.scale = 1;
+        fl.trail = [];
+        fl.dust = [];
+        fl.fly = null;
+        flMsg(fl.best > 0
+          ? 'record ' + Math.round(fl.best) + 'm. drag back from the cube and release.'
+          : 'drag back from the cube and release');
+      } else {
+        flMsg('<b>you made it.</b> the cube is on the other side.');
+      }
+      flBindInput();
+      cancelAnimationFrame(fl.raf);
+      fl.raf = requestAnimationFrame(flLoop);
+    }
+
+    var flBound = false;
+    function flBindInput() {
+      var c = fl.canvas;
+      if (!c || flBound) return;
+      flBound = true;
+
+      c.addEventListener('pointerdown', function (e) {
+        if (fl.state === 'flying') return;
+        if (fl.state === 'win') return;
+        c.setPointerCapture(e.pointerId);
+        fl.state = 'aiming';
+        fl.cube.x = FL_START;
+        fl.cube.rot = 0;
+        fl.cube.scale = 1;
+        fl.trail = [];
+        fl.drag = { x: e.clientX, y: e.clientY, dx: 0, dy: 0 };
+        fl.power = 0;
+        flMsg('pull back further for more power');
+      });
+
+      c.addEventListener('pointermove', function (e) {
+        if (fl.state !== 'aiming' || !fl.drag) return;
+        var dx = e.clientX - fl.drag.x;
+        var dy = e.clientY - fl.drag.y;
+        fl.drag.dx = dx;
+        fl.drag.dy = dy;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        fl.power = Math.max(0, Math.min(1, d / 170));
+        var meters = fl.str * 100 * Math.pow(fl.power, 1.6);
+        flMsg('power ' + Math.round(fl.power * 100) + '% &nbsp;·&nbsp; about <b>' + Math.round(meters) + 'm</b>'
+          + (meters >= FL_GOAL ? ' &nbsp;·&nbsp; that clears it' : ''));
+      });
+
+      function release() {
+        if (fl.state !== 'aiming') return;
+        if (fl.power < 0.04) {
+          fl.state = 'idle';
+          flMsg('barely moved. drag back from the cube.');
+          return;
+        }
+        flFire(fl.power);
+      }
+      c.addEventListener('pointerup', function () {
+        if (fl.state === 'aiming') release();
+      });
+      c.addEventListener('pointercancel', function () {
+        if (fl.state === 'aiming') release();
+      });
+
+      window.addEventListener('resize', function () {
+        if (document.getElementById('fling').classList.contains('active')) flResize();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== ' ') return;
+        var v = document.getElementById('fling');
+        if (!v || !v.classList.contains('active')) return;
+        var ae = document.activeElement;
+        if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) return;
+        if (flGym.active) { e.preventDefault(); flRep(); }
+      });
+    }
+
+    function flFire(power) {
+      var dist = Math.max(1, fl.str * 100 * Math.pow(power, 1.6));
+      fl.state = 'flying';
+      fl.drag = null;
+      fl.lastMsg = '';
+      fl.fly = {
+        t: 0,
+        dist: dist,
+        dur: Math.min(2.3, 0.85 + dist / 620),
+        arc: Math.min(300, 70 + dist * 0.32),
+        from: FL_START
+      };
+      fl.trail = [];
+      flMsg('flying...');
+    }
+
+    function flLand(dist) {
+      var gy = fl.cssH * 0.74;
+      var i;
+      for (i = 0; i < 14; i++) {
+        fl.dust.push({
+          m: dist,
+          y: gy,
+          vx: (Math.random() - 0.5) * 60,
+          vy: -Math.random() * 46,
+          life: 1
+        });
+      }
+      fl.cube.x = dist;
+      fl.cube.rot = 0;
+      fl.cube.scale = 1;
+      if (dist > fl.best) { fl.best = dist; flSave(); }
+      if (dist >= FL_GOAL) {
+        fl.state = 'win';
+        flSave();
+        flMsg('<b>you made it.</b> ' + Math.round(dist) + 'm. the cube is on the other side. day ' + fl.day + '.');
+      } else {
+        fl.state = 'landed';
+        var need = Math.ceil(FL_GOAL - dist);
+        fl.lastMsg = 'landed <b>' + Math.round(dist) + 'm</b> — ' + need + 'm short.';
+        flMsg(fl.lastMsg);
+        setTimeout(function () {
+          if (fl.state === 'landed') { fl.state = 'idle'; }
+        }, 900);
+      }
+      flHud();
+    }
+
+    function flLoop(now) {
+      var view = document.getElementById('fling');
+      if (!view || !view.classList.contains('active')) {
+        fl.raf = 0;
+        return;
+      }
+      fl.t = (now || 0) / 1000;
+      var dt = 1 / 60;
+
+      if (fl.state === 'flying' && fl.fly) {
+        var f = fl.fly;
+        f.t += dt / f.dur;
+        if (f.t >= 1) {
+          f.t = 1;
+          fl.state = 'landed';
+          flLand(f.dist);
+        } else {
+          var t = f.t;
+          fl.cube.x = f.from + f.dist * t;
+          fl.cube.rot = t * f.dist * 0.35;
+          fl.cube.scale = 1;
+          if (fl.trail.length === 0 || Math.abs(fl.trail[fl.trail.length - 1].x - fl.cube.x) > 1.2) {
+            fl.trail.push({ x: fl.cube.x, t: t });
+            if (fl.trail.length > 60) fl.trail.shift();
+          }
+        }
+      }
+
+      // camera
+      if (fl.state === 'flying' || fl.state === 'landed') {
+        fl.camTarget = fl.cube.x - FL_VIEW * 0.45;
+      } else if (fl.state === 'win') {
+        fl.camTarget = FL_GOAL - FL_VIEW * 0.5;
+      } else {
+        fl.camTarget = 0;
+      }
+      fl.camTarget = Math.max(0, Math.min(FL_WORLD - FL_VIEW, fl.camTarget));
+      fl.cam += (fl.camTarget - fl.cam) * 0.1;
+      if (Math.abs(fl.camTarget - fl.cam) < 0.05) fl.cam = fl.camTarget;
+
+      // dust
+      for (var i = fl.dust.length - 1; i >= 0; i--) {
+        var d = fl.dust[i];
+        d.m += d.vx * dt;
+        d.vy += 220 * dt;
+        d.y += d.vy * dt;
+        d.life -= dt * 1.3;
+        if (d.life <= 0) fl.dust.splice(i, 1);
+      }
+
+      // gym marker
+      if (flGym.active) {
+        flGym.pos += flGym.dir * flGym.speed * dt;
+        if (flGym.pos > 1) { flGym.pos = 1; flGym.dir = -1; }
+        if (flGym.pos < 0) { flGym.pos = 0; flGym.dir = 1; }
+        var mk = document.getElementById('flMark');
+        if (mk) mk.style.left = (flGym.pos * 100) + '%';
+      }
+
+      flDraw();
+      fl.raf = requestAnimationFrame(flLoop);
+    }
+
+    function flDraw() {
+      var ctx = fl.ctx;
+      if (!ctx) return;
+      var w = fl.cssW, h = fl.cssH;
+      var gy = h * 0.74;
+      var ppm = w / FL_VIEW;
+      var i;
+
+      ctx.clearRect(0, 0, w, h);
+
+      var sky = ctx.createLinearGradient(0, 0, 0, h);
+      sky.addColorStop(0, '#0a0913');
+      sky.addColorStop(0.55, '#171233');
+      sky.addColorStop(1, '#241a45');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
+
+      for (i = 0; i < 70; i++) {
+        var sx = (((i * 397) % 1000) / 1000) * w;
+        var sy = (((i * 211) % 1000) / 1000) * gy * 0.92;
+        ctx.globalAlpha = 0.12 + (((i * 71) % 100) / 100) * 0.45;
+        ctx.fillStyle = i % 7 === 0 ? '#9d8bff' : '#d8d2ff';
+        ctx.fillRect(sx, sy, 1.6, 1.6);
+      }
+      ctx.globalAlpha = 1;
+
+      // far hills (parallax)
+      ctx.fillStyle = 'rgba(38,28,72,0.85)';
+      ctx.beginPath();
+      ctx.moveTo(0, gy);
+      for (i = 0; i <= w; i += 10) {
+        var wx = (i + fl.cam * 0.25 * ppm);
+        ctx.lineTo(i, gy - 26 - Math.sin(wx / 190) * 16 - Math.sin(wx / 61) * 7);
+      }
+      ctx.lineTo(w, gy);
+      ctx.closePath();
+      ctx.fill();
+
+      // near hills
+      ctx.fillStyle = 'rgba(28,20,54,0.95)';
+      ctx.beginPath();
+      ctx.moveTo(0, gy);
+      for (i = 0; i <= w; i += 10) {
+        var wx2 = (i + fl.cam * 0.55 * ppm);
+        ctx.lineTo(i, gy - 12 - Math.sin(wx2 / 120 + 1.7) * 11 - Math.sin(wx2 / 40) * 4);
+      }
+      ctx.lineTo(w, gy);
+      ctx.closePath();
+      ctx.fill();
+
+      // ground
+      var gnd = ctx.createLinearGradient(0, gy, 0, h);
+      gnd.addColorStop(0, '#2b2050');
+      gnd.addColorStop(1, '#120d22');
+      ctx.fillStyle = gnd;
+      ctx.fillRect(0, gy, w, h - gy);
+      ctx.strokeStyle = 'rgba(140,110,255,0.55)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, gy + 0.5);
+      ctx.lineTo(w, gy + 0.5);
+      ctx.stroke();
+
+      // distance ticks
+      ctx.font = '9px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      var startTick = Math.floor(fl.cam / 100) * 100;
+      for (var m = startTick; m <= fl.cam + FL_VIEW + 100; m += 100) {
+        if (m < 0 || m > FL_WORLD) continue;
+        var tx = flPx(m);
+        ctx.strokeStyle = 'rgba(160,140,255,0.25)';
+        ctx.beginPath();
+        ctx.moveTo(tx, gy + 4);
+        ctx.lineTo(tx, gy + (m % 500 === 0 ? 18 : 10));
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(190,175,255,0.45)';
+        ctx.fillText(m + 'm', tx, gy + 30);
+      }
+
+      // best marker
+      if (fl.best > 0) {
+        var bx = flPx(fl.best);
+        if (bx > -20 && bx < w + 20) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255,90,138,0.55)';
+          ctx.setLineDash([4, 5]);
+          ctx.beginPath();
+          ctx.moveTo(bx, gy + 2);
+          ctx.lineTo(bx, gy - 34);
+          ctx.stroke();
+          ctx.restore();
+          ctx.fillStyle = 'rgba(255,120,160,0.9)';
+          ctx.font = '10px ui-monospace, monospace';
+          ctx.fillText('record', bx, gy - 40);
+        }
+      }
+
+      // destination flag
+      var fx = flPx(FL_GOAL);
+      if (fx > -60 && fx < w + 60) {
+        ctx.strokeStyle = 'rgba(200,190,255,0.8)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(fx, gy);
+        ctx.lineTo(fx, gy - 58);
+        ctx.stroke();
+        var wave = Math.sin(fl.t * 3) * 4;
+        ctx.fillStyle = fl.state === 'win' ? '#50c878' : '#7c5cff';
+        ctx.beginPath();
+        ctx.moveTo(fx, gy - 58);
+        ctx.lineTo(fx + 30, gy - 50 + wave);
+        ctx.lineTo(fx, gy - 42);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = 'rgba(200,190,255,0.55)';
+        ctx.font = '9px ui-monospace, monospace';
+        ctx.fillText('the other side', fx + 4, gy - 66);
+      }
+
+      // trail
+      for (i = 0; i < fl.trail.length; i++) {
+        var tr = fl.trail[i];
+        var age = i / Math.max(1, fl.trail.length);
+        ctx.globalAlpha = age * 0.5;
+        ctx.fillStyle = '#a58bff';
+        ctx.fillRect(flPx(tr.x) - 2, gy - 6 - fl.trailY(tr.t), 4, 4);
+      }
+      ctx.globalAlpha = 1;
+
+      // slingshot
+      var sx0 = flPx(FL_START);
+      var forkY = gy - 26;
+      ctx.strokeStyle = 'rgba(150,130,240,0.9)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(sx0 - 11, gy);
+      ctx.lineTo(sx0 - 11, forkY);
+      ctx.moveTo(sx0 + 3, gy);
+      ctx.lineTo(sx0 + 3, forkY);
+      ctx.stroke();
+
+      var pouchX = sx0 - 4, pouchY = gy - 30;
+      if (fl.state === 'aiming' && fl.drag) {
+        var pull = Math.min(60, Math.sqrt(fl.drag.dx * fl.drag.dx + fl.drag.dy * fl.drag.dy));
+        var ang = Math.atan2(fl.drag.dy || 0, fl.drag.dx || -1);
+        pouchX = sx0 - 4 + Math.cos(ang) * pull * 0.9;
+        pouchY = gy - 30 + Math.sin(ang) * pull * 0.9;
+      }
+      ctx.strokeStyle = 'rgba(255,120,160,0.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx0 - 11, forkY);
+      ctx.lineTo(pouchX, pouchY);
+      ctx.lineTo(sx0 + 3, forkY);
+      ctx.stroke();
+
+      // predicted arc while aiming
+      if (fl.state === 'aiming' && fl.power > 0.04) {
+        var pd = fl.str * 100 * Math.pow(fl.power, 1.6);
+        ctx.save();
+        ctx.setLineDash([3, 6]);
+        ctx.strokeStyle = 'rgba(180,160,255,0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (var k = 0; k <= 24; k++) {
+          var tt = k / 24;
+          var ax = flPx(FL_START + pd * tt);
+          var ay = gy - Math.min(300, 70 + pd * 0.32) * 4 * tt * (1 - tt) - 8;
+          if (k === 0) ctx.moveTo(ax, ay); else ctx.lineTo(ax, ay);
+        }
+        ctx.stroke();
+        ctx.restore();
+        var landX = flPx(FL_START + pd);
+        ctx.fillStyle = 'rgba(180,160,255,0.5)';
+        ctx.fillRect(landX - 1, gy - 8, 2, 8);
+      }
+
+      // dust
+      for (i = 0; i < fl.dust.length; i++) {
+        var du = fl.dust[i];
+        ctx.globalAlpha = Math.max(0, du.life) * 0.6;
+        ctx.fillStyle = '#c9b8ff';
+        ctx.fillRect(flPx(du.m), du.y, 2.5, 2.5);
+      }
+      ctx.globalAlpha = 1;
+
+      // cube
+      var cx = flPx(fl.cube.x);
+      var cy = gy - 8;
+      if (fl.state === 'flying' && fl.fly) {
+        cy = gy - fl.fly.arc * 4 * fl.fly.t * (1 - fl.fly.t) - 8;
+      }
+      var size = 16 * (fl.cube.scale || 1);
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(fl.cube.rot || 0);
+      ctx.shadowColor = 'rgba(124,92,255,0.9)';
+      ctx.shadowBlur = 16;
+      ctx.fillStyle = '#241a45';
+      ctx.fillRect(-size / 2, -size / 2, size, size);
+      ctx.strokeStyle = '#a58bff';
+      ctx.lineWidth = 1.6;
+      ctx.strokeRect(-size / 2, -size / 2, size, size);
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(180,160,255,0.5)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(-size / 6, -size / 6, size / 3, size / 3);
+      ctx.restore();
+
+      // power meter
+      if (fl.state === 'aiming') {
+        var pw = fl.power;
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.fillRect(12, 12, 6, 70);
+        var pg = ctx.createLinearGradient(0, 82, 0, 12);
+        pg.addColorStop(0, '#7c5cff');
+        pg.addColorStop(1, '#ff5a8a');
+        ctx.fillStyle = pg;
+        ctx.fillRect(12, 82 - 70 * pw, 6, 70 * pw);
+      }
+
+      // off-screen cube hint
+      if (fl.state === 'flying' || fl.state === 'landed' || fl.state === 'win') {
+        if (cx > w - 4) {
+          ctx.fillStyle = 'rgba(180,160,255,0.9)';
+          ctx.beginPath();
+          ctx.moveTo(w - 12, h / 2 - 8);
+          ctx.lineTo(w - 2, h / 2);
+          ctx.lineTo(w - 12, h / 2 + 8);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+    }
+
+    /* trail y helper (kept separate for clarity) */
+    fl.trailY = function (t) {
+      if (!fl.fly) return 0;
+      return fl.fly.arc * 4 * t * (1 - t);
+    };
+
+    /* ===== GYM ===== */
+    function flTrainStart() {
+      if (flGym.active || fl.trainedToday) return;
+      flGym.active = true;
+      flGym.rep = 0;
+      flGym.gain = 0;
+      flGym.pos = 0;
+      flGym.dir = 1;
+      flGym.speed = 0.8;
+      flGym.zone = [0.34, 0.66];
+      document.getElementById('flGymIdle').classList.add('fl-hidden');
+      document.getElementById('flGymRun').classList.remove('fl-hidden');
+      var z = document.getElementById('flZone');
+      z.style.left = (flGym.zone[0] * 100) + '%';
+      z.style.width = ((flGym.zone[1] - flGym.zone[0]) * 100) + '%';
+      document.getElementById('flRepNote').textContent = 'rep 1 / 5';
+      document.getElementById('flGymNote').textContent = 'one session per day. train, then sleep.';
+    }
+
+    function flRep() {
+      if (!flGym.active) return;
+      var inZone = flGym.pos >= flGym.zone[0] && flGym.pos <= flGym.zone[1];
+      var gain = 0.03;
+      if (inZone) {
+        var mid = (flGym.zone[0] + flGym.zone[1]) / 2;
+        var half = (flGym.zone[1] - flGym.zone[0]) / 2;
+        var q = 1 - Math.abs(flGym.pos - mid) / half;
+        gain = 0.16 + 0.14 * Math.max(0, q);
+      }
+      flGym.gain += gain;
+      flGym.rep++;
+      var note = document.getElementById('flRepNote');
+      var msg = document.getElementById('flGymNote');
+      msg.innerHTML = (inZone ? 'clean rep. ' : 'sloppy rep. ') + '+' + gain.toFixed(2) + ' strength';
+
+      if (flGym.rep >= flGym.reps) {
+        flGym.active = false;
+        fl.str += flGym.gain;
+        fl.trainedToday = true;
+        document.getElementById('flGymRun').classList.add('fl-hidden');
+        document.getElementById('flGymIdle').classList.remove('fl-hidden');
+        document.getElementById('flTrainBtn').disabled = true;
+        document.getElementById('flSleepBtn').disabled = false;
+        msg.innerHTML = 'session done: <b>+' + flGym.gain.toFixed(2) + ' strength</b>. sleep to make it count.';
+        flSave();
+        flHud();
+        return;
+      }
+      note.textContent = 'rep ' + (flGym.rep + 1) + ' / 5';
+      var shrink = 0.03 * flGym.rep;
+      flGym.zone = [0.34 + shrink, 0.66 - shrink];
+      flGym.speed = 0.8 + flGym.rep * 0.16;
+      flGym.dir = Math.random() < 0.5 ? 1 : -1;
+      var z = document.getElementById('flZone');
+      z.style.left = (flGym.zone[0] * 100) + '%';
+      z.style.width = ((flGym.zone[1] - flGym.zone[0]) * 100) + '%';
+    }
+
+    function flSleep() {
+      if (!fl.trainedToday) return;
+      fl.trainedToday = false;
+      fl.day++;
+      fl.str = Math.round(fl.str * 100) / 100;
+      flSave();
+      flHud();
+      flTrainStartPending();
+      document.getElementById('flGymNote').innerHTML = 'day <b>' + fl.day + '</b>. strength ' + fl.str.toFixed(1) + '. back to the slingshot.';
+      flMsg('day ' + fl.day + ' &nbsp;·&nbsp; strength ' + fl.str.toFixed(1) + ' &nbsp;·&nbsp; max throw ~' + Math.round(fl.str * 100) + 'm');
+    }
+
+    function flTrainStartPending() {
+      document.getElementById('flTrainBtn').disabled = false;
+      document.getElementById('flSleepBtn').disabled = true;
+      document.getElementById('flGymState').textContent = 'open';
+    }
+
+    function tasFling() {
+      fl.str = Math.max(fl.str, 12);
+      fl.day = Math.max(fl.day, 1);
+      flSave();
+      flHud();
+      st('st-fling', 'strength set to ' + fl.str.toFixed(1) + '. max throw ' + Math.round(fl.str * 100) + 'm.');
+    }
     /* NEW-GAMES-JS-MARKER */
     /* ===== GAME INIT HOOK ===== */
     (function () {
