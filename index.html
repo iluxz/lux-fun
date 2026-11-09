@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lux.fun</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a12;
+      --panel: rgba(15, 20, 35, 0.95);
+      --accent: #7c5cff;
+      --accent2: #ff5a8a;
+      --text: #e8e6f2;
+      --muted: #7a7a8c;
+      --border: rgba(124, 92, 255, 0.3);
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    header {
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      font-size: 28px;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .tagline { color: var(--muted); font-size: 12px; letter-spacing: 2px; }
+    .hub {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 40px;
+    }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .game-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .game-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(124, 92, 255, 0.2);
+    }
+    .game-card h3 { font-size: 18px; margin-bottom: 8px; }
+    .game-card p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .game-view {
+      display: none;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 40px;
+    }
+    .game-view.active { display: block; }
+    .hub.active { display: block; }
+    .hub.hidden { display: none; }
+    .back-btn {
+      background: rgba(124, 92, 255, 0.1);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      font-size: 12px;
+    }
+    .back-btn:hover { background: rgba(124, 92, 255, 0.2); }
+    /* Password game */
+    .pw-game input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      margin: 12px 0;
+    }
+    .rule {
+      padding: 8px 12px;
+      margin: 4px 0;
+      border-radius: 6px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .rule.pass { background: rgba(80, 200, 120, 0.1); border-left: 3px solid #50c878; }
+    .rule.fail { background: rgba(200, 80, 80, 0.1); border-left: 3px solid #c85050; }
+    .win { color: #50c878; font-size: 20px; margin-top: 20px; text-align: center; }
+    /* Spend game */
+    .spend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .spend-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .spend-item button {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .budget { font-size: 24px; text-align: center; margin: 20px 0; }
+    /* Size comparison */
+    .size-bar {
+      height: 40px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .size-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      transition: width 0.5s ease;
+    }
+    .size-label { position: absolute; top: 50%; left: 12px; transform: translateY(-50%); font-size: 12px; }
+    .size-controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .size-controls button { background: rgba(124,92,255,0.1); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+    .size-controls button:hover { background: rgba(124,92,255,0.2); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>lux.fun</h1>
+    <span class="tagline">interactive experiments</span>
+  </header>
+
+  <div class="hub active" id="hub">
+    <div class="game-grid">
+      <div class="game-card" onclick="showGame('password')">
+        <h3>The Password Game</h3>
+        <p>Create a password that satisfies increasingly absurd rules. Can you make it past rule 20?</p>
+      </div>
+      <div class="game-card" onclick="showGame('spend')">
+        <h3>Spend Lux's Credits</h3>
+        <p>You have 1,000,000 credits. Buy as much as you can. Go broke.</p>
+      </div>
+      <div class="game-card" onclick="showGame('scale')">
+        <h3>Scale of Things</h3>
+        <p>Compare the size of everyday objects to cosmic ones. Mind-bending.</p>
+      </div>
+      <div class="game-card" onclick="showGame('clicker')">
+        <h3>Void Clicker</h3>
+        <p>Click the cube. Earn points. Buy upgrades. The void watches.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Game -->
+  <div class="game-view" id="password">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>The Password Game</h2>
+    <p style="color:var(--muted);margin:8px 0">Your password must satisfy all rules below.</p>
+    <input type="text" id="pwInput" placeholder="type your password..." oninput="checkPassword()">
+    <div id="pwRules"></div>
+    <div class="win" id="pwWin"></div>
+  </div>
+
+  <!-- Spend Game -->
+  <div class="game-view" id="spend">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Spend Lux's Credits</h2>
+    <div class="budget" id="spendBudget">1,000,000 CR</div>
+    <div class="spend-grid" id="spendGrid"></div>
+    <div id="spendResult"></div>
+  </div>
+
+  <!-- Scale Game -->
+  <div class="game-view" id="scale">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Scale of Things</h2>
+    <p style="color:var(--muted);margin:8px 0">Select an object to see how it compares.</p>
+    <div class="size-controls" id="sizeControls"></div>
+    <div class="size-bar"><div class="size-fill" id="sizeFill" style="width:0%"></div><div class="size-label" id="sizeLabel"></div></div>
+    <div id="sizeInfo" style="color:var(--muted);font-size:13px;margin-top:12px"></div>
+  </div>
+
+  <!-- Clicker Game -->
+  <div class="game-view" id="clicker">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Void Clicker</h2>
+    <div style="text-align:center;margin:40px 0">
+      <div id="clickerCube" style="width:120px;height:120px;margin:0 auto;background:linear-gradient(135deg,#7c5cff,#ff5a8a);border-radius:12px;cursor:pointer;box-shadow:0 0 40px rgba(124,92,255,0.4);transition:transform 0.1s" onclick="clickCube()"></div>
+      <div style="margin-top:20px;font-size:24px" id="clickerScore">0 points</div>
+      <div style="margin-top:8px;color:var(--muted);font-size:12px" id="clickerMult">1x multiplier</div>
+      <div style="margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap" id="clickerUpgrades"></div>
+    </div>
+  </div>
+
+  <script>
+    // Navigation
+    function showGame(name) {
+      document.getElementById('hub').classList.add('hidden');
+      document.getElementById('hub').classList.remove('active');
+      document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
+      document.getElementById(name).classList.add('active');
+    }
+    function showHub() {
+      document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
+      document.getElementById('hub').classList.remove('hidden');
+      document.getElementById('hub').classList.add('active');
+    }
+
+    // Password Game
+    const pwRules = [
+      { text: "Your password must be at least 5 characters long", check: p => p.length >= 5 },
+      { text: "Your password must contain a number", check: p => /[0-9]/.test(p) },
+      { text: "Your password must contain an uppercase letter", check: p => /[A-Z]/.test(p) },
+      { text: "Your password must contain a special character", check: p => /[!@#$%^&*]/.test(p) },
+      { text: "The digits in your password must add up to 25", check: p => (p.match(/\d/g)||[]).reduce((a,b)=>a+parseInt(b),0) === 25 },
+      { text: "Your password must contain the word 'lux'", check: p => /lux/i.test(p) },
+      { text: "Your password must contain a roman numeral", check: p => /IV|IX|XL|XC|CD|CM|V|X|L|C|D|M/.test(p) },
+      { text: "Your password must contain an emoji", check: p => /[\u{1F300}-\u{1F9FF}]/u.test(p) },
+      { text: "Your password must be at least 12 characters long", check: p => p.length >= 12 },
+      { text: "Your password must contain a prime number", check: p => /2|3|5|7|11|13|17|19|23|29|31|37|41|43|47/.test(p) },
+      { text: "Your password must contain the current month", check: p => new RegExp(new Date().toLocaleString('en',{month:'long'}), 'i').test(p) },
+      { text: "Your password must contain 'void'", check: p => /void/i.test(p) },
+      { text: "Your password must contain a color", check: p => /red|blue|green|yellow|purple|orange|pink|cyan|magenta/i.test(p) },
+      { text: "Your password must contain a number greater than 100", check: p => /\d{3,}/.test(p) },
+      { text: "Your password must contain 'cube'", check: p => /cube/i.test(p) },
+      { text: "Your password must contain a vowel repeated 3 times", check: p => /aaa|eee|iii|ooo|uuu/i.test(p) },
+      { text: "Your password must contain 'rng'", check: p => /rng/i.test(p) },
+      { text: "Your password must contain the day of the week", check: p => new RegExp(new Date().toLocaleString('en',{weekday:'long'}), 'i').test(p) },
+      { text: "Your password must be at least 20 characters long", check: p => p.length >= 20 },
+      { text: "Your password must contain 'lux.fun'", check: p => /lux\.fun/i.test(p) },
+    ];
+    let pwRuleCount = 5;
+    function checkPassword() {
+      const p = document.getElementById('pwInput').value;
+      const rulesEl = document.getElementById('pwRules');
+      const winEl = document.getElementById('pwWin');
+      rulesEl.innerHTML = '';
+      let allPass = true;
+      for (let i = 0; i < Math.min(pwRuleCount, pwRules.length); i++) {
+        const rule = pwRules[i];
+        const passed = rule.check(p);
+        if (!passed) allPass = false;
+        const div = document.createElement('div');
+        div.className = 'rule ' + (passed ? 'pass' : 'fail');
+        div.textContent = (passed ? '✓ ' : '✗ ') + rule.text;
+        rulesEl.appendChild(div);
+      }
+      if (allPass && pwRuleCount < pwRules.length) {
+        pwRuleCount++;
+        checkPassword();
+      }
+      if (allPass && pwRuleCount >= pwRules.length) {
+        winEl.textContent = '🎉 you beat the password game!';
+      } else {
+        winEl.textContent = '';
+      }
+    }
+    checkPassword();
+
+    // Spend Game
+    const spendItems = [
+      { name: 'Coffee', price: 5 },
+      { name: 'Rubber Duck', price: 12 },
+      { name: 'Mechanical Keyboard', price: 150 },
+      { name: 'Monitor', price: 300 },
+      { name: 'GPU', price: 800 },
+      { name: 'Gaming Chair', price: 450 },
+      { name: 'Standing Desk', price: 600 },
+      { name: 'Espresso Machine', price: 350 },
+      { name: 'Mechanical Watch', price: 2000 },
+      { name: 'Drone', price: 1200 },
+      { name: '3D Printer', price: 2500 },
+      { name: 'Server Rack', price: 5000 },
+      { name: 'Luxury Car', price: 45000 },
+      { name: 'House', price: 350000 },
+      { name: 'Private Island', price: 5000000 },
+      { name: 'SpaceX Ticket', price: 55000000 },
+    ];
+    let budget = 1000000;
+    let spent = 0;
+    function renderSpend() {
+      document.getElementById('spendBudget').textContent = (budget - spent).toLocaleString() + ' CR remaining';
+      const grid = document.getElementById('spendGrid');
+      grid.innerHTML = '';
+      spendItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'spend-item';
+        div.innerHTML = '<span>' + item.name + '</span><span>' + item.price.toLocaleString() + ' CR</span>';
+        const btn = document.createElement('button');
+        btn.textContent = 'Buy';
+        btn.onclick = () => {
+          if (spent + item.price <= budget) {
+            spent += item.price;
+            renderSpend();
+            document.getElementById('spendResult').textContent = 'bought ' + item.name + '! total spent: ' + spent.toLocaleString() + ' CR';
+          } else {
+            document.getElementById('spendResult').textContent = 'not enough credits!';
+          }
+        };
+        div.appendChild(btn);
+        grid.appendChild(div);
+      });
+    }
+    renderSpend();
+
+    // Scale Game
+    const scaleItems = [
+      { name: 'Ant', size: 0.005, info: 'Ants can lift 50x their body weight.' },
+      { name: 'Coin', size: 0.025, info: 'A standard coin is about 2.5cm across.' },
+      { name: 'Cat', size: 0.4, info: 'Average domestic cat.' },
+      { name: 'Human', size: 1.7, info: 'Average human height.' },
+      { name: 'Giraffe', size: 5.5, info: 'Tallest land animal.' },
+      { name: 'Blue Whale', size: 30, info: 'Largest animal ever.' },
+      { name: 'Eiffel Tower', size: 330, info: '330 meters tall.' },
+      { name: 'Mount Everest', size: 8849, info: '8,849 meters above sea level.' },
+      { name: 'Earth', size: 12742000, info: '12,742 km diameter.' },
+      { name: 'Sun', size: 1392700000, info: '109x Earth diameter.' },
+      { name: 'Solar System', size: 28746000000000, info: 'Neptune orbit diameter.' },
+      { name: 'Milky Way', size: 9.46e20, info: '100,000 light years across.' },
+      { name: 'Observable Universe', size: 8.8e26, info: '93 billion light years across.' },
+    ];
+    const maxSize = scaleItems[scaleItems.length-1].size;
+    function renderScale() {
+      const controls = document.getElementById('sizeControls');
+      controls.innerHTML = '';
+      scaleItems.forEach(item => {
+        const btn = document.createElement('button');
+        btn.textContent = item.name;
+        btn.onclick = () => {
+          const pct = (Math.log10(item.size) - Math.log10(scaleItems[0].size)) / (Math.log10(maxSize) - Math.log10(scaleItems[0].size)) * 100;
+          document.getElementById('sizeFill').style.width = Math.max(1, pct) + '%';
+          document.getElementById('sizeLabel').textContent = item.name + ' — ' + item.size.toLocaleString() + ' m';
+          document.getElementById('sizeInfo').textContent = item.info;
+        };
+        controls.appendChild(btn);
+      });
+    }
+    renderScale();
+
+    // Void Clicker
+    let clickerScore = 0;
+    let clickerMult = 1;
+    let clickerUpgrades = [
+      { name: 'Double Click', cost: 10, mult: 2, bought: false },
+      { name: 'Triple Click', cost: 50, mult: 3, bought: false },
+      { name: 'Auto Clicker', cost: 100, mult: 0, bought: false, auto: true },
+      { name: 'Void Boost', cost: 500, mult: 5, bought: false },
+    ];
+    function clickCube() {
+      clickerScore += clickerMult;
+      document.getElementById('clickerScore').textContent = clickerScore.toLocaleString() + ' points';
+      const cube = document.getElementById('clickerCube');
+      cube.style.transform = 'scale(0.95)';
+      setTimeout(() => cube.style.transform = 'scale(1)', 100);
+    }
+    function renderClickerUpgrades() {
+      const el = document.getElementById('clickerUpgrades');
+      el.innerHTML = '';
+      clickerUpgrades.forEach((u, i) => {
+        if (u.bought) return;
+        const btn = document.createElement('button');
+        btn.textContent = u.name + ' (' + u.cost + ' pts)';
+        btn.onclick = () => {
+          if (clickerScore >= u.cost) {
+            clickerScore -= u.cost;
+            u.bought = true;
+            if (u.auto) {
+              setInterval(() => { clickerScore += clickerMult; document.getElementById('clickerScore').textContent = clickerScore.toLocaleString() + ' points'; }, 1000);
+            } else {
+              clickerMult = u.mult;
+              document.getElementById('clickerMult').textContent = clickerMult + 'x multiplier';
+            }
+            renderClickerUpgrades();
+          }
+        };
+        el.appendChild(btn);
+      });
+    }
+    renderClickerUpgrades();
+    // auto-clicker tick
+    setInterval(() => {
+      clickerUpgrades.forEach(u => {
+        if (u.bought && u.auto) {
+          clickerScore += clickerMult;
+          document.getElementById('clickerScore').textContent = clickerScore.toLocaleString() + ' points';
+        }
+      });
+    }, 1000);
+  </script>
+</body>
+</html>
