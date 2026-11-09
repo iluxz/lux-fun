@@ -387,6 +387,43 @@
     .fl-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
     .fl-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; min-height: 16px; }
     .fl-hidden { display: none !important; }
+    /* CAPTCHA3-CSS-MARKER */
+    .cap-holdbar {
+      width: 200px; max-width: 100%; height: 6px; border-radius: 4px;
+      background: rgba(255,255,255,0.08); overflow: hidden; margin: 4px 0 2px;
+    }
+    .cap-holdbar > div {
+      height: 100%; width: 0%; border-radius: 4px;
+      background: linear-gradient(90deg, #7c5cff, #ff5a8a);
+      transition: width 0.05s linear;
+    }
+    /* SAUL-CSS-MARKER */
+    /* saul */
+    .saul-stage {
+      position: relative; border-radius: 12px; border: 1px solid var(--border);
+      overflow: hidden; background: radial-gradient(circle at 50% 30%, #1a1436, #0a0913 70%);
+    }
+    #saulCanvas { display: block; width: 100%; height: 380px; cursor: grab; touch-action: none; }
+    #saulCanvas:active { cursor: grabbing; }
+    .saul-flash {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 40px; font-weight: 800; letter-spacing: 4px; color: #ff5a8a;
+      opacity: 0; pointer-events: none; text-shadow: 0 0 24px rgba(255,90,138,0.9);
+      transition: opacity 0.12s;
+    }
+    .saul-flash.on { opacity: 1; }
+    .saul-row {
+      display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px;
+    }
+    .saul-size {
+      display: flex; align-items: center; gap: 10px; justify-content: center;
+      margin-top: 12px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+    }
+    .saul-size input { width: 200px; max-width: 60%; accent-color: #7c5cff; }
+    .saul-msg {
+      text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; min-height: 16px;
+    }
+
     /* NEW-GAMES-CSS-MARKER */
     /* ===== NEW GAMES ===== */
     .cap-stage {
@@ -605,6 +642,12 @@
         <span class="badge">PROGRESS</span>
         <h3>Fling The Cube</h3>
         <p>Your slingshot is weak. The other side is 1000m away. Train at the gym, get stronger, throw again.</p>
+      </div>
+
+      <div class="game-card" onclick="showGame('saul')">
+        <span class="badge">3D</span>
+        <h3>Interactive Saul</h3>
+        <p>Saul Goodman, rendered in actual 3D. Spin him. Zoom him. Make him enormous.</p>
       </div>
     </div>
   </div>
@@ -851,6 +894,29 @@
       <button class="cap-btn" onclick="initPrec()">restart</button>
     </div>
     <div style="text-align:center;color:var(--muted);font-size:12px;margin-top:10px" id="precMsg"></div>
+  </div>
+  <!-- SAUL-VIEWS-MARKER -->
+  <!-- Interactive Saul -->
+  <div class="game-view" id="saul">
+    <button class="back-btn" onclick="showHub()">← Back</button>
+    <h2>Interactive Saul</h2>
+    <p style="color:var(--muted);margin:8px 0">drag to spin · scroll to zoom · the slider makes him bigger.</p>
+    <div class="saul-stage">
+      <canvas id="saulCanvas"></canvas>
+      <div class="saul-flash" id="saulFlash">OBJECTION!</div>
+    </div>
+    <div class="saul-size">
+      <span>size</span>
+      <input type="range" id="saulSize" min="40" max="320" value="100">
+      <span id="saulSizeVal">100%</span>
+    </div>
+    <div class="saul-row">
+      <button class="cap-btn" id="saulSpin" onclick="saulToggleSpin()">spin: on</button>
+      <button class="cap-btn" onclick="saulObjection()">objection!</button>
+      <button class="cap-btn" onclick="saulSuit()">change suit</button>
+      <button class="cap-btn" onclick="saulReset()">reset view</button>
+    </div>
+    <div class="saul-msg" id="saulMsg">loading three.js...</div>
   </div>
   <!-- FLING-VIEWS-MARKER -->
   <!-- Fling The Cube -->
@@ -2219,19 +2285,36 @@
         });
       } },
       { mount: function (el, done) {
-        el.innerHTML = '<div class="cap-prompt">hold the button for exactly 3 seconds</div><button class="cap-btn rec" id="capHold">hold me</button><div class="cap-title" id="capHoldMsg"></div>';
+        el.innerHTML = '<div class="cap-prompt">hold the button for exactly 3 seconds</div><button class="cap-btn rec" id="capHold">hold me</button><div class="cap-holdbar"><div id="capHoldBar"></div></div><div class="cap-title" id="capHoldMsg">0.42s grace. be normal about it.</div>';
         var b = el.querySelector('#capHold');
         var msg = el.querySelector('#capHoldMsg');
-        var t0 = 0;
-        b.addEventListener('pointerdown', function () { t0 = Date.now(); b.style.background = 'rgba(255,90,138,0.35)'; });
-        b.addEventListener('pointerup', function () {
+        var bar = el.querySelector('#capHoldBar');
+        var t0 = 0, tick = 0;
+        function stopTick() { clearInterval(tick); tick = 0; }
+        function release(cancelled) {
+          stopTick();
           b.style.background = '';
           if (!t0) return;
           var d = Date.now() - t0;
           t0 = 0;
-          if (Math.abs(d - 3000) <= 160) { msg.textContent = 'good. ' + d + 'ms'; setTimeout(done, 350); }
-          else msg.textContent = (d < 3000 ? 'too short' : 'too long') + ' (' + d + 'ms). again.';
+          bar.style.width = '0%';
+          if (cancelled) { msg.textContent = 'you let go. hold it.'; return; }
+          if (Math.abs(d - 3000) <= 420) { msg.textContent = 'good. ' + d + 'ms'; setTimeout(done, 350); }
+          else msg.textContent = (d < 3000 ? 'too short' : 'too long') + ' (' + (d / 1000).toFixed(2) + 's). again.';
+        }
+        b.addEventListener('pointerdown', function () {
+          t0 = Date.now();
+          b.style.background = 'rgba(255,90,138,0.35)';
+          stopTick();
+          tick = setInterval(function () {
+            var d = Date.now() - t0;
+            bar.style.width = Math.min(100, (d / 3000) * 100) + '%';
+            msg.textContent = (d / 1000).toFixed(2) + 's';
+          }, 40);
         });
+        b.addEventListener('pointerup', function () { release(false); });
+        b.addEventListener('pointercancel', function () { release(true); });
+        b.addEventListener('pointerleave', function () { if (t0) release(true); });
       } },
       { mount: function (el, done) {
         var words = ['LUX', 'VOID', 'CUBE', 'OBJBOX', 'ATTIC'];
@@ -2750,5 +2833,458 @@
       }
     });
   </script>
+<script type="module">
+/* ===== INTERACTIVE SAUL ===== */
+(function () {
+  var canvas = document.getElementById('saulCanvas');
+  var msgEl = document.getElementById('saulMsg');
+  var flashEl = document.getElementById('saulFlash');
+  var sizeEl = document.getElementById('saulSize');
+  var sizeVal = document.getElementById('saulSizeVal');
+  var spinBtn = document.getElementById('saulSpin');
+  if (!canvas || !msgEl) return;
+
+  var api = {
+    init: function () { wantStart = true; },
+    toggleSpin: function () {},
+    objection: function () {},
+    suit: function () {},
+    reset: function () {},
+    pause: function () { pause(); }
+  };
+  window.init_saul = function () { api.init(); };
+  window.saulToggleSpin = function () { api.toggleSpin(); };
+  window.saulObjection = function () { api.objection(); };
+  window.saulSuit = function () { api.suit(); };
+  window.saulReset = function () { api.reset(); };
+
+  var wantStart = false;
+  var started = false;
+  var ready = false;
+  var active = false;
+  var raf = 0;
+
+  // ---- runtime state (filled in once three.js loads) ----
+  var THREE = null, scene = null, cam = null, renderer = null;
+  var saul = null, pedestal = null;
+  var theta = 0.55, phi = 1.32, radius = 3.7;
+  var autoSpin = true, sizeScale = 1, shake = 0, bobT = 0, lastT = 0;
+  var suitMat = null, pantsMat = null, tieMat = null;
+  var suitIdx = 0;
+  var SUITS = [
+    { name: 'tan', suit: 0xc9a97a, pants: 0xb1926a, tie: 0xa8332f },
+    { name: 'charcoal', suit: 0x6f7280, pants: 0x5c5f6b, tie: 0x8f2f38 },
+    { name: 'navy', suit: 0x2f3a58, pants: 0x28324c, tie: 0xd0a44c },
+    { name: 'olive', suit: 0x5f6b45, pants: 0x4f5939, tie: 0x2f4a2c },
+    { name: 'purple', suit: 0x6a4b8f, pants: 0x543a73, tie: 0xff5a8a }
+  ];
+
+  function setMsg(t) { if (msgEl) msgEl.textContent = t; }
+  function spinLabel() { if (spinBtn) spinBtn.textContent = 'spin: ' + (autoSpin ? 'on' : 'off'); }
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+
+  // ---------------------------------------------------------------
+  // model
+  // ---------------------------------------------------------------
+  function buildSaul() {
+    var g = new THREE.Group();
+
+    suitMat = new THREE.MeshStandardMaterial({ color: SUITS[0].suit, flatShading: true, roughness: 0.65, metalness: 0.06 });
+    pantsMat = new THREE.MeshStandardMaterial({ color: SUITS[0].pants, flatShading: true, roughness: 0.7, metalness: 0.04 });
+    tieMat = new THREE.MeshStandardMaterial({ color: SUITS[0].tie, flatShading: true, roughness: 0.5, metalness: 0.05 });
+
+    var skin = new THREE.MeshStandardMaterial({ color: 0xe8b48c, flatShading: true, roughness: 0.75, metalness: 0.02 });
+    var hair = new THREE.MeshStandardMaterial({ color: 0x3a2418, flatShading: true, roughness: 0.85, metalness: 0.0 });
+    var shirt = new THREE.MeshStandardMaterial({ color: 0xf4f1e8, flatShading: true, roughness: 0.8, metalness: 0.0 });
+    var shoe = new THREE.MeshStandardMaterial({ color: 0x2a1d16, flatShading: true, roughness: 0.55, metalness: 0.1 });
+    var caseM = new THREE.MeshStandardMaterial({ color: 0x5a3a22, flatShading: true, roughness: 0.6, metalness: 0.08 });
+    var brass = new THREE.MeshStandardMaterial({ color: 0xc8a24a, flatShading: true, roughness: 0.35, metalness: 0.55 });
+    var dark = new THREE.MeshStandardMaterial({ color: 0x1a1210, flatShading: true, roughness: 0.8, metalness: 0.0 });
+
+    function box(w, h, d, m, x, y, z, parent, ry) {
+      var b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+      b.position.set(x, y, z);
+      if (ry) b.rotation.y = ry;
+      (parent || g).add(b);
+      return b;
+    }
+
+    // legs + shoes
+    box(0.23, 0.62, 0.27, pantsMat, -0.16, 0.47, 0, g);
+    box(0.23, 0.62, 0.27, pantsMat, 0.16, 0.47, 0, g);
+    box(0.26, 0.13, 0.44, shoe, -0.16, 0.075, 0.05, g);
+    box(0.26, 0.13, 0.44, shoe, 0.16, 0.075, 0.05, g);
+
+    // torso / jacket
+    box(0.64, 0.66, 0.36, suitMat, 0, 1.09, 0, g);
+    // buttons
+    box(0.045, 0.045, 0.03, brass, 0.03, 1.02, 0.185, g);
+    box(0.045, 0.045, 0.03, brass, 0.03, 0.86, 0.185, g);
+    // shirt + collar
+    box(0.2, 0.5, 0.03, shirt, 0, 1.12, 0.182, g);
+    box(0.1, 0.1, 0.04, shirt, -0.08, 1.4, 0.19, g, -0.35);
+    box(0.1, 0.1, 0.04, shirt, 0.08, 1.4, 0.19, g, 0.35);
+    // tie
+    box(0.085, 0.3, 0.03, tieMat, 0, 1.13, 0.2, g);
+    box(0.11, 0.08, 0.035, tieMat, 0, 1.32, 0.2, g);
+    // lapels
+    box(0.13, 0.44, 0.05, suitMat, -0.12, 1.2, 0.19, g, 0.18);
+    box(0.13, 0.44, 0.05, suitMat, 0.12, 1.2, 0.19, g, -0.18);
+
+    // arms
+    var armL = box(0.17, 0.58, 0.2, suitMat, -0.42, 1.06, 0.02, g);
+    armL.rotation.z = 0.1;
+    var armR = box(0.17, 0.58, 0.2, suitMat, 0.42, 1.06, 0.02, g);
+    armR.rotation.z = -0.1;
+    box(0.13, 0.11, 0.15, shirt, -0.45, 1.32, 0.02, g);
+    box(0.13, 0.11, 0.15, shirt, 0.45, 1.32, 0.02, g);
+    box(0.14, 0.15, 0.16, skin, -0.49, 0.74, 0.04, g);
+    box(0.14, 0.15, 0.16, skin, 0.49, 0.74, 0.04, g);
+
+    // neck + head
+    box(0.16, 0.12, 0.16, skin, 0, 1.44, 0, g);
+    var head = box(0.36, 0.42, 0.34, skin, 0, 1.68, 0, g);
+    head.rotation.y = 0.0;
+    // hair
+    box(0.39, 0.15, 0.37, hair, 0, 1.9, -0.005, g);
+    box(0.39, 0.14, 0.09, hair, 0, 1.82, -0.19, g);
+    box(0.05, 0.24, 0.3, hair, -0.195, 1.74, -0.03, g);
+    box(0.05, 0.24, 0.3, hair, 0.195, 1.74, -0.03, g);
+    box(0.28, 0.08, 0.06, hair, 0, 1.88, 0.13, g);
+    // face
+    box(0.06, 0.045, 0.03, dark, -0.09, 1.74, 0.176, g);
+    box(0.06, 0.045, 0.03, dark, 0.09, 1.74, 0.176, g);
+    box(0.13, 0.035, 0.03, hair, -0.09, 1.8, 0.175, g, 0.12);
+    box(0.13, 0.035, 0.03, hair, 0.09, 1.8, 0.175, g, -0.12);
+    box(0.07, 0.12, 0.09, skin, 0, 1.66, 0.19, g);
+    box(0.14, 0.035, 0.03, dark, 0, 1.57, 0.176, g);
+
+    // briefcase in right hand
+    var bc = new THREE.Group();
+    bc.position.set(0.52, 0.55, 0.06);
+    bc.rotation.z = -0.07;
+    g.add(bc);
+    box(0.36, 0.27, 0.11, caseM, 0, 0, 0, bc);
+    box(0.37, 0.03, 0.12, brass, 0, 0.0, 0, bc);
+    var handle = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.014, 5, 10, Math.PI), caseM);
+    handle.position.set(0, 0.14, 0);
+    bc.add(handle);
+
+    // inflatable statue of liberty, standing on the pedestal next to him
+    var lib = new THREE.Group();
+    lib.position.set(-1.02, 0, 0.16);
+    lib.rotation.y = 0.4;
+    var lgreen = new THREE.MeshStandardMaterial({ color: 0x7fd6b0, flatShading: true, roughness: 0.55, metalness: 0.0, emissive: 0x0d3a2c, emissiveIntensity: 0.6 });
+    var flameM = new THREE.MeshStandardMaterial({ color: 0xffb347, flatShading: true, roughness: 0.3, emissive: 0xff7a1a, emissiveIntensity: 1.2 });
+    var base = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.24, 0.09, 8), lgreen);
+    base.position.y = 0.045; lib.add(base);
+    var body = new THREE.Mesh(new THREE.ConeGeometry(0.19, 0.52, 7), lgreen);
+    body.position.y = 0.34; lib.add(body);
+    var lhead = new THREE.Mesh(new THREE.SphereGeometry(0.085, 8, 6), lgreen);
+    lhead.position.y = 0.65; lib.add(lhead);
+    for (var i = 0; i < 6; i++) {
+      var spike = new THREE.Mesh(new THREE.ConeGeometry(0.018, 0.09, 4), lgreen);
+      var a = (i / 6) * Math.PI * 2;
+      spike.position.set(Math.cos(a) * 0.085, 0.71, Math.sin(a) * 0.085);
+      spike.rotation.z = Math.cos(a) * 0.5;
+      spike.rotation.x = -Math.sin(a) * 0.5;
+      lib.add(spike);
+    }
+    var armLib = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.26, 0.05), lgreen);
+    armLib.position.set(0.12, 0.63, 0); armLib.rotation.z = -0.5; lib.add(armLib);
+    var torch = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.11, 6), flameM);
+    torch.position.set(0.22, 0.77, 0); lib.add(torch);
+    var tablet = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.16, 0.04), lgreen);
+    tablet.position.set(-0.13, 0.36, 0.05); tablet.rotation.z = 0.15; lib.add(tablet);
+
+    g.userData.liberty = lib;
+    g.add(lib);
+    return g;
+  }
+
+  function buildScene() {
+    scene = new THREE.Scene();
+    cam = new THREE.PerspectiveCamera(42, 1.6, 0.1, 100);
+
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    // ---- lights: purple / magenta void-club look ----
+    scene.add(new THREE.AmbientLight(0x5a4a9a, 1.1));
+    var hemi = new THREE.HemisphereLight(0x9a7dff, 0x120a24, 1.5);
+    scene.add(hemi);
+
+    var key = new THREE.DirectionalLight(0xff6aa8, 2.3);
+    key.position.set(2.6, 4.2, 3.2);
+    scene.add(key);
+
+    var rim = new THREE.DirectionalLight(0x59d8ff, 1.6);
+    rim.position.set(-3.2, 2.4, -2.4);
+    scene.add(rim);
+
+    var fill = new THREE.PointLight(0x7c5cff, 9, 12, 2);
+    fill.position.set(-1.4, 1.9, 2.2);
+    scene.add(fill);
+
+    // ---- pedestal ----
+    pedestal = new THREE.Group();
+    var pMat = new THREE.MeshStandardMaterial({ color: 0x1d1630, flatShading: true, roughness: 0.5, metalness: 0.35 });
+    var pTop = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.42, 0.16, 20), pMat);
+    pTop.position.y = -0.08;
+    pedestal.add(pTop);
+    var ring = new THREE.Mesh(
+      new THREE.TorusGeometry(1.36, 0.018, 6, 40),
+      new THREE.MeshStandardMaterial({ color: 0xff5a8a, emissive: 0xff2f72, emissiveIntensity: 1.6, roughness: 0.3 })
+    );
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = 0.005;
+    pedestal.add(ring);
+    var glow = new THREE.Mesh(
+      new THREE.CircleGeometry(1.05, 28),
+      new THREE.MeshBasicMaterial({ color: 0x7c5cff, transparent: true, opacity: 0.12 })
+    );
+    glow.rotation.x = -Math.PI / 2;
+    glow.position.y = 0.002;
+    pedestal.add(glow);
+    scene.add(pedestal);
+
+    // contact shadow
+    var shadow = new THREE.Mesh(
+      new THREE.CircleGeometry(0.62, 20),
+      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35 })
+    );
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.y = 0.012;
+    shadow.scale.set(1, 0.7, 1);
+    scene.add(shadow);
+
+    saul = buildSaul();
+    scene.add(saul);
+
+    resize();
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { resize(); });
+      ro.observe(canvas);
+    }
+    window.addEventListener('resize', resize);
+  }
+
+  function resize() {
+    if (!renderer) return;
+    var w = canvas.clientWidth || 560;
+    var h = canvas.clientHeight || 380;
+    renderer.setSize(w, h, false);
+    cam.aspect = w / h;
+    cam.updateProjectionMatrix();
+  }
+
+  // ---------------------------------------------------------------
+  // frame loop
+  // ---------------------------------------------------------------
+  function frame(t) {
+    if (!active) { raf = 0; return; }
+    raf = requestAnimationFrame(frame);
+    var dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 0.016;
+    lastT = t;
+
+    if (autoSpin) theta += 0.5 * dt;
+    bobT += dt;
+
+    saul.position.y = Math.sin(bobT * 1.5) * 0.012;
+    if (shake > 0) {
+      shake = Math.max(0, shake - dt * 2.6);
+      saul.position.x = Math.sin(bobT * 52) * 0.055 * shake;
+    } else {
+      saul.position.x = 0;
+    }
+
+    saul.scale.setScalar(sizeScale);
+
+    var sp = Math.sin(phi);
+    cam.position.set(
+      Math.sin(theta) * sp * radius,
+      Math.cos(phi) * radius + 0.98,
+      Math.cos(theta) * sp * radius
+    );
+    cam.lookAt(0, 0.95, 0);
+
+    renderer.render(scene, cam);
+  }
+
+  function start() {
+    if (!ready) { wantStart = true; return; }
+    started = true;
+    if (active) return;
+    active = true;
+    lastT = 0;
+    raf = requestAnimationFrame(frame);
+  }
+
+  function pause() {
+    active = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+  }
+
+  // ---------------------------------------------------------------
+  // controls
+  // ---------------------------------------------------------------
+  function bindControls() {
+    var dragging = false, lx = 0, ly = 0;
+    var points = {}, pinchDist = 0, pinchRadius = 0;
+
+    canvas.addEventListener('pointerdown', function (e) {
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+      points[e.pointerId] = { x: e.clientX, y: e.clientY };
+      var ids = Object.keys(points);
+      if (ids.length === 2) {
+        var a = points[ids[0]], b = points[ids[1]];
+        pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+        pinchRadius = radius;
+      }
+      dragging = true;
+      lx = e.clientX;
+      ly = e.clientY;
+      if (autoSpin) { autoSpin = false; spinLabel(); }
+    });
+
+    canvas.addEventListener('pointermove', function (e) {
+      if (!points[e.pointerId]) return;
+      points[e.pointerId] = { x: e.clientX, y: e.clientY };
+      var ids = Object.keys(points);
+      if (ids.length === 2) {
+        var a = points[ids[0]], b = points[ids[1]];
+        var d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinchDist > 0) radius = clamp(pinchRadius * (pinchDist / Math.max(1, d)), 2.0, 8.5);
+        return;
+      }
+      if (!dragging) return;
+      var dx = e.clientX - lx;
+      var dy = e.clientY - ly;
+      lx = e.clientX;
+      ly = e.clientY;
+      theta -= dx * 0.0075;
+      phi = clamp(phi - dy * 0.0055, 0.32, 2.3);
+    });
+
+    function up(e) {
+      delete points[e.pointerId];
+      if (Object.keys(points).length < 2) pinchDist = 0;
+      if (!Object.keys(points).length) dragging = false;
+    }
+    canvas.addEventListener('pointerup', up);
+    canvas.addEventListener('pointercancel', up);
+    canvas.addEventListener('pointerleave', function (e) { if (e.buttons === 0) up(e); });
+
+    canvas.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      radius = clamp(radius + e.deltaY * 0.0017, 2.0, 8.5);
+    }, { passive: false });
+  }
+
+  api.toggleSpin = function () {
+    autoSpin = !autoSpin;
+    spinLabel();
+    if (ready) setMsg(autoSpin ? 'spinning.' : 'spin off. drag him around.');
+    if (wantStart) start();
+  };
+
+  api.objection = function () {
+    if (!ready) return;
+    autoSpin = false;
+    spinLabel();
+    shake = 1;
+    if (flashEl) {
+      flashEl.classList.add('on');
+      clearTimeout(api._objT);
+      api._objT = setTimeout(function () { flashEl.classList.remove('on'); }, 620);
+    }
+    setTimeout(function () { shake = 1; }, 220);
+  };
+
+  api.suit = function () {
+    if (!ready) return;
+    suitIdx = (suitIdx + 1) % SUITS.length;
+    var s = SUITS[suitIdx];
+    suitMat.color.setHex(s.suit);
+    pantsMat.color.setHex(s.pants);
+    tieMat.color.setHex(s.tie);
+    setMsg('suit: ' + s.name + '. very professional.');
+  };
+
+  api.reset = function () {
+    theta = 0.55; phi = 1.32; radius = 3.7;
+    autoSpin = true; spinLabel();
+    sizeScale = 1;
+    if (sizeEl) sizeEl.value = 100;
+    if (sizeVal) sizeVal.textContent = '100%';
+    suitIdx = 0;
+    if (suitMat) {
+      suitMat.color.setHex(SUITS[0].suit);
+      pantsMat.color.setHex(SUITS[0].pants);
+      tieMat.color.setHex(SUITS[0].tie);
+    }
+    setMsg('reset. he is normal sized again.');
+    if (wantStart) start();
+  };
+
+  if (sizeEl) {
+    sizeEl.addEventListener('input', function () {
+      sizeScale = clamp(+sizeEl.value / 100, 0.4, 3.2);
+      if (sizeVal) sizeVal.textContent = sizeEl.value + '%';
+      if (sizeScale > 1.9) setMsg('that is a lot of saul.');
+      else setMsg('');
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // load three.js (cdn fallback chain)
+  // ---------------------------------------------------------------
+  var CDNS = [
+    'https://unpkg.com/three@0.160.0/build/three.module.js',
+    'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js',
+    'https://esm.sh/three@0.160.0'
+  ];
+
+  function loadThree(i) {
+    if (i >= CDNS.length) {
+      setMsg('could not load three.js. check your connection and reload.');
+      return;
+    }
+    setMsg('loading three.js... (' + (i + 1) + '/' + CDNS.length + ')');
+    import(CDNS[i]).then(function (mod) {
+      THREE = mod;
+      buildScene();
+      bindControls();
+      ready = true;
+      spinLabel();
+      setMsg('drag to spin · scroll to zoom · slider for size');
+      if (wantStart) start();
+    }).catch(function () {
+      loadThree(i + 1);
+    });
+  }
+
+  // pause the render loop when the view is not the active one
+  var _sg = window.showGame;
+  if (typeof _sg === 'function') {
+    window.showGame = function (n) {
+      _sg(n);
+      if (n === 'saul') start(); else pause();
+    };
+  }
+  var _sh = window.showHub;
+  if (typeof _sh === 'function') {
+    window.showHub = function () {
+      _sh();
+      pause();
+    };
+  }
+
+  loadThree(0);
+})();
+</script>
 </body>
 </html>
