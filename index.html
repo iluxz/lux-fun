@@ -234,6 +234,70 @@
     .color-options { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
     .color-options button { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; }
     .color-options button:hover { background: rgba(124,92,255,0.2); }
+
+    /* ===== KONAMI / ADMIN ===== */
+    .lx-modal {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(5,5,12,0.9);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .lx-modal.show { display: flex; }
+    .lx-card {
+      background: #0d0d18;
+      border: 1px solid var(--accent);
+      border-radius: 14px;
+      padding: 26px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 0 60px rgba(124,92,255,0.35);
+    }
+    .lx-card h2 { font-size: 17px; letter-spacing: 2px; margin-bottom: 6px; }
+    .lx-card p { color: var(--muted); font-size: 12px; margin-bottom: 14px; line-height: 1.5; }
+    .lx-card input {
+      width: 100%; padding: 12px; font-size: 15px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-family: monospace;
+    }
+    .lx-row { display: flex; gap: 8px; margin-top: 12px; }
+    .lx-btn {
+      flex: 1; padding: 10px 14px; border-radius: 8px; cursor: pointer;
+      background: rgba(124,92,255,0.15);
+      border: 1px solid var(--border);
+      color: var(--text); font-size: 12px; letter-spacing: 1px;
+    }
+    .lx-btn:hover { background: rgba(124,92,255,0.3); }
+    .lx-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .lx-btn.danger { border-color: rgba(200,80,80,0.5); color: #ff8a8a; }
+    .lx-err { color: #ff7a7a; font-size: 12px; margin-top: 10px; min-height: 16px; }
+    #adminCard { max-width: 780px; max-height: 86vh; overflow: auto; }
+    .admin-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(215px,1fr));
+      gap: 10px; margin-top: 6px;
+    }
+    .admin-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px;
+    }
+    .admin-item h4 { font-size: 11px; margin-bottom: 8px; letter-spacing: 1px; color: var(--accent); }
+    .admin-item button {
+      width: 100%; padding: 8px; border-radius: 6px; cursor: pointer;
+      background: rgba(124,92,255,0.15); border: 1px solid var(--border);
+      color: var(--text); font-size: 11px;
+    }
+    .admin-item button:hover { background: rgba(124,92,255,0.3); }
+    .admin-status { font-size: 10px; color: var(--muted); margin-top: 6px; min-height: 13px; }
+    .admin-banner {
+      font-size: 10px; letter-spacing: 3px; color: var(--accent2);
+      border: 1px dashed rgba(255,90,138,0.4);
+      padding: 6px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px;
+    }
+
   </style>
 </head>
 <body>
@@ -247,7 +311,7 @@
       <div class="game-card" onclick="showGame('password')">
         <span class="badge">HARD</span>
         <h3>The Password Game</h3>
-        <p>Create a password satisfying 20 increasingly absurd rules. Good luck.</p>
+        <p>Create a password satisfying 57 increasingly absurd rules. Good luck.</p>
       </div>
       <div class="game-card" onclick="showGame('spend')">
         <span class="badge">FUN</span>
@@ -387,6 +451,81 @@
     <button class="back-btn" onclick="initColor()" style="margin-top:12px">New Game</button>
   </div>
 
+
+  <!-- KONAMI / ADMIN MODALS -->
+  <div class="lx-modal" id="konamiModal">
+    <div class="lx-card">
+      <h2>restricted area</h2>
+      <p>you found the konami code. enter the passphrase to unlock the admin panel.</p>
+      <input type="password" id="konamiInput" placeholder="passphrase..." onkeydown="if(event.key==='Enter')tryKonami()">
+      <div class="lx-err" id="konamiErr"></div>
+      <div class="lx-row">
+        <button class="lx-btn" onclick="closeKonami()">cancel</button>
+        <button class="lx-btn primary" onclick="tryKonami()">unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="lx-modal" id="adminModal">
+    <div class="lx-card" id="adminCard">
+      <span class="admin-banner">ADMIN ACCESS GRANTED</span>
+      <h2>tas panel</h2>
+      <p>tool-assisted speedrun toggles. everything here is cheating. that is the point.</p>
+      <div class="admin-grid">
+        <div class="admin-item">
+          <h4>PASSWORD GAME</h4>
+          <button onclick="tasPassword()">instant win</button>
+          <button onclick="tasPasswordReveal()" style="margin-top:6px">reveal all rules</button>
+          <div class="admin-status" id="st-pw"></div>
+        </div>
+        <div class="admin-item">
+          <h4>SPEND CREDITS</h4>
+          <button onclick="tasSpend()">infinite credits</button>
+          <div class="admin-status" id="st-spend"></div>
+        </div>
+        <div class="admin-item">
+          <h4>VOID CLICKER</h4>
+          <button onclick="tasClicker()">+1e12 points</button>
+          <div class="admin-status" id="st-clicker"></div>
+        </div>
+        <div class="admin-item">
+          <h4>REACTION TIME</h4>
+          <button onclick="tasReaction()">set 0ms</button>
+          <div class="admin-status" id="st-reaction"></div>
+        </div>
+        <div class="admin-item">
+          <h4>MEMORY MATCH</h4>
+          <button onclick="tasMemory()">reveal all</button>
+          <div class="admin-status" id="st-memory"></div>
+        </div>
+        <div class="admin-item">
+          <h4>TYPING TEST</h4>
+          <button onclick="tasTyping()">auto complete</button>
+          <div class="admin-status" id="st-typing"></div>
+        </div>
+        <div class="admin-item">
+          <h4>NUMBER GUESS</h4>
+          <button onclick="tasGuess()">reveal number</button>
+          <div class="admin-status" id="st-guess"></div>
+        </div>
+        <div class="admin-item">
+          <h4>COLOR GUESS</h4>
+          <button onclick="tasColor()">reveal answer</button>
+          <div class="admin-status" id="st-color"></div>
+        </div>
+        <div class="admin-item">
+          <h4>EVERYTHING</h4>
+          <button onclick="tasAll()">run all tas</button>
+          <button onclick="tasClear()" style="margin-top:6px">clear log</button>
+          <div class="admin-status" id="st-all"></div>
+        </div>
+      </div>
+      <div class="lx-row" style="margin-top:16px">
+        <button class="lx-btn danger" onclick="closeAdmin()">close panel</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Navigation
     function showGame(name) {
@@ -402,39 +541,110 @@
     }
 
     // ===== PASSWORD GAME =====
-    const pwRules = [
-      { text: "at least 5 characters", check: p => p.length >= 5 },
-      { text: "contains a number", check: p => /[0-9]/.test(p) },
-      { text: "contains uppercase", check: p => /[A-Z]/.test(p) },
-      { text: "contains special char (!@#$%^&*)", check: p => /[!@#$%^&*]/.test(p) },
-      { text: "digits sum to 25", check: p => (p.match(/\d/g)||[]).reduce((a,b)=>a+parseInt(b),0) === 25 },
-      { text: "contains 'lux'", check: p => /lux/i.test(p) },
-      { text: "contains a roman numeral", check: p => /IV|IX|XL|XC|CD|CM|\bV\b|\bX\b|\bL\b|\bC\b|\bD\b|\bM\b/.test(p) },
-      { text: "contains an emoji", check: p => /[\u{1F300}-\u{1F9FF}]/u.test(p) },
-      { text: "at least 12 characters", check: p => p.length >= 12 },
-      { text: "contains a prime number", check: p => /2|3|5|7|11|13|17|19|23|29|31|37|41|43|47/.test(p) },
-      { text: "contains current month", check: p => new RegExp(new Date().toLocaleString('en',{month:'long'}), 'i').test(p) },
-      { text: "contains 'void'", check: p => /void/i.test(p) },
-      { text: "contains a color name", check: p => /red|blue|green|yellow|purple|orange|pink|cyan|magenta|black|white/i.test(p) },
-      { text: "contains a 3+ digit number", check: p => /\d{3,}/.test(p) },
-      { text: "contains 'cube'", check: p => /cube/i.test(p) },
-      { text: "contains a vowel repeated 3x", check: p => /aaa|eee|iii|ooo|uuu/i.test(p) },
-      { text: "contains 'rng'", check: p => /rng/i.test(p) },
-      { text: "contains day of week", check: p => new RegExp(new Date().toLocaleString('en',{weekday:'long'}), 'i').test(p) },
-      { text: "at least 20 characters", check: p => p.length >= 20 },
-      { text: "contains 'lux.fun'", check: p => /lux\.fun/i.test(p) },
-      { text: "contains 'objbox'", check: p => /objbox/i.test(p) },
-      { text: "contains a number divisible by 7", check: p => { const nums = p.match(/\d+/g); return nums && nums.some(n => parseInt(n) % 7 === 0 && parseInt(n) > 0); } },
-      { text: "contains 'haydee'", check: p => /haydee/i.test(p) },
-      { text: "contains 'neal'", check: p => /neal/i.test(p) },
-      { text: "contains 'sol'", check: p => /sol/i.test(p) },
-      { text: "password length is a prime number", check: p => { const n = p.length; if (n < 2) return false; for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false; return true; } },
-      { text: "contains 'fishing'", check: p => /fishing/i.test(p) },
-      { text: "contains 'laboratory'", check: p => /laboratory/i.test(p) },
-      { text: "contains 'transcend'", check: p => /transcend/i.test(p) },
-      { text: "contains 'prestige'", check: p => /prestige/i.test(p) },
+    var PWD = {
+      digitSum: function (p) { return (p.match(/\d/g) || []).reduce(function (a, b) { return a + (+b); }, 0); },
+      isPrime: function (n) { if (n < 2) return false; for (var i = 2; i * i <= n; i++) if (n % i === 0) return false; return true; },
+      words: function (p) { return p.match(/[A-Za-z]{2,}/g) || []; },
+      asciiSum: function (p) { var s = 0; Array.from(p).forEach(function (c) { s += c.codePointAt(0); }); return s; },
+      counts: function (p) { var m = {}; Array.from(p).forEach(function (c) { m[c] = (m[c] || 0) + 1; }); return m; },
+      maxRepeat: function (p) { var v = Object.keys(PWD.counts(p)).map(function (k) { return PWD.counts(p)[k]; }); return v.length ? Math.max.apply(null, v) : 0; },
+      onceCount: function (p) { var m = PWD.counts(p); return Object.keys(m).filter(function (k) { return m[k] === 1; }).length; },
+      hasPalindrome: function (p, minLen) {
+        var a = Array.from(p);
+        var n = a.length;
+        for (var c = 0; c < 2 * n - 1; c++) {
+          var l = Math.floor(c / 2), r = l + (c % 2);
+          while (l >= 0 && r < n && a[l] === a[r]) {
+            if (r - l + 1 >= minLen) return true;
+            l--; r++;
+          }
+        }
+        return false;
+      },
+      alphaRun: function (p, len) {
+        var l = p.toLowerCase();
+        for (var i = 0; i + len <= l.length; i++) {
+          var ok = true;
+          for (var k = 1; k < len; k++) {
+            if (l.charCodeAt(i + k) !== l.charCodeAt(i + k - 1) + 1) { ok = false; break; }
+          }
+          if (ok && /[a-z]/.test(l[i])) return true;
+        }
+        return false;
+      },
+      revAlphaRun: function (p, len) {
+        var l = p.toLowerCase();
+        for (var i = 0; i + len <= l.length; i++) {
+          var ok = true;
+          for (var k = 1; k < len; k++) {
+            if (l.charCodeAt(i + k) !== l.charCodeAt(i + k - 1) - 1) { ok = false; break; }
+          }
+          if (ok && /[a-z]/.test(l[i])) return true;
+        }
+        return false;
+      }
+    };
+
+    var pwRules = [
+      { text: "at least 5 characters", check: function (p) { return p.length >= 5; } },
+      { text: "contains a number", check: function (p) { return /\d/.test(p); } },
+      { text: "contains an uppercase letter", check: function (p) { return /[A-Z]/.test(p); } },
+      { text: "contains a special character (!@#$%^&*)", check: function (p) { return /[!@#$%^&*]/.test(p); } },
+      { text: "at least 12 characters", check: function (p) { return p.length >= 12; } },
+      { text: "your digits must sum to 25", check: function (p) { return PWD.digitSum(p) === 25; } },
+      { text: "contains an emoji", check: function (p) { return /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(p); } },
+      { text: "at least 20 characters", check: function (p) { return p.length >= 20; } },
+      { text: "contains a 3-digit number", check: function (p) { return /\d{3,}/.test(p); } },
+      { text: "contains a number divisible by 7", check: function (p) { var n = p.match(/\d+/g) || []; return n.some(function (x) { return parseInt(x, 10) % 7 === 0 && parseInt(x, 10) > 0; }); } },
+      { text: "contains a palindrome of at least 4 characters (abba, 1001)", check: function (p) { return PWD.hasPalindrome(p, 4); } },
+      { text: "no single character may appear more than 8 times", check: function (p) { return PWD.maxRepeat(p) <= 8; } },
+      { text: "at least 6 characters must appear exactly once", check: function (p) { return PWD.onceCount(p) >= 6; } },
+      { text: "must start with a letter", check: function (p) { return /^[A-Za-z]/.test(p); } },
+      { text: "must contain every vowel (a, e, i, o, u)", check: function (p) { return /a/i.test(p) && /e/i.test(p) && /i/i.test(p) && /o/i.test(p) && /u/i.test(p); } },
+      { text: "must contain a hex color code (#rrggbb)", check: function (p) { return /#[0-9a-fA-F]{6}(?![0-9a-fA-F])/.test(p); } },
+      { text: "the number of uppercase letters must be prime", check: function (p) { return PWD.isPrime((p.match(/[A-Z]/g) || []).length); } },
+      { text: "must contain a chess square (a1 – h8)", check: function (p) { return /[a-h][1-8]/.test(p); } },
+      { text: "must contain a non-English character (é, ü, 日本語)", check: function (p) { return /[^\x00-\x7F]/.test(p); } },
+      { text: "must contain a two-character sequence repeated back to back (abab)", check: function (p) { return /(..)\1/.test(p); } },
+      { text: "must contain a word longer than 8 letters", check: function (p) { return PWD.words(p).some(function (w) { return w.length > 8; }); } },
+      { text: "must contain a digit that is a perfect square (0, 1, 4 or 9)", check: function (p) { return /[0149]/.test(p); } },
+      { text: "must contain a digit whose English name has four letters (four, five, nine)", check: function (p) { return /[459]/.test(p); } },
+      { text: "must contain a Mersenne prime digit (3 or 7)", check: function (p) { return /[37]/.test(p); } },
+      { text: "must contain 'password' spelled backwards", check: function (p) { return /drowssap/i.test(p); } },
+      { text: "must NOT contain the word 'password'", check: function (p) { return !/password/i.test(p); } },
+      { text: "must contain a flag emoji", check: function (p) { return /[\u{1F1E6}-\u{1F1FF}]{2}/u.test(p); } },
+      { text: "must contain a superscript number (¹²³)", check: function (p) { return /[\u00B9\u00B2\u00B3\u2070\u2074-\u2079]/.test(p); } },
+      { text: "must contain 4 letters from the top keyboard row (qwertyuiop)", check: function (p) { return /[qwertyuiop]{4}/i.test(p); } },
+      { text: "must contain a real element symbol with correct capitalization (He, Au, Fe)", check: function (p) { return /(He|Li|Be|Ne|Na|Mg|Al|Si|Cl|Ar|Ca|Ti|Cr|Mn|Fe|Co|Ni|Cu|Zn|Ga|Ge|As|Se|Br|Kr|Rb|Sr|Zr|Nb|Mo|Ag|Cd|In|Sn|Sb|Te|Xe|Cs|Ba|La|Ce|Pt|Au|Hg|Tl|Pb|Bi|Po|At|Rn|Ra|Th|Pa)/.test(p); } },
+      { text: "must contain a file extension as a word (txt, png, zip, mp3)", check: function (p) { return /(txt|exe|png|zip|mp3|html|pdf|jpg|gif|wav|log)/i.test(p); } },
+      { text: "must contain the name of a planet", check: function (p) { return /(mercury|venus|earth|mars|jupiter|saturn|uranus|neptune)/i.test(p); } },
+      { text: "must contain the current month", check: function (p) { return new RegExp(new Date().toLocaleString('en', { month: 'long' }), 'i').test(p); } },
+      { text: "must contain the current day of the week", check: function (p) { return new RegExp(new Date().toLocaleString('en', { weekday: 'long' }), 'i').test(p); } },
+      { text: "your length must be odd", check: function (p) { return p.length % 2 === 1; } },
+      { text: "must contain a three-character palindrome (aba)", check: function (p) { return /(.)(.)\1/.test(p); } },
+      { text: "must contain three consecutive uppercase letters", check: function (p) { return /[A-Z]{3}/.test(p); } },
+      { text: "must NOT contain the letter q", check: function (p) { return !/q/i.test(p); } },
+      { text: "must contain a URL scheme (http:// or https://)", check: function (p) { return /https?:\/\//.test(p); } },
+      { text: "must contain a word with 3 consecutive consonants", check: function (p) { return PWD.words(p).some(function (w) { return /[^aeiouAEIOU]{3,}/.test(w); }); } },
+      { text: "must contain a word in reverse alphabetical order (zyx, fed)", check: function (p) { return PWD.revAlphaRun(p, 3); } },
+      { text: "must contain a word with a double letter (ll, ss)", check: function (p) { return /([A-Za-z])\1/i.test(p); } },
+      { text: "must contain a word that starts and ends with the same letter", check: function (p) { return PWD.words(p).some(function (w) { return w.length > 2 && w[0].toLowerCase() === w[w.length - 1].toLowerCase(); }); } },
+      { text: "must contain a 5-letter word with exactly two vowels", check: function (p) { return PWD.words(p).some(function (w) { return w.length === 5 && (w.match(/[aeiou]/gi) || []).length === 2; }); } },
+      { text: "must contain a currency symbol ($, €, £, ¥)", check: function (p) { return /[$€£¥]/.test(p); } },
+      { text: "must contain a double space", check: function (p) { return p.indexOf('  ') !== -1; } },
+      { text: "must contain 4 letters in alphabetical order (abcd, wxyz)", check: function (p) { return PWD.alphaRun(p, 4); } },
+      { text: "must contain the letter z", check: function (p) { return /z/i.test(p); } },
+      { text: "must contain 'lux'", check: function (p) { return /lux/i.test(p); } },
+      { text: "must contain 'lux.fun'", check: function (p) { return /lux\.fun/i.test(p); } },
+      { text: "must contain 'void'", check: function (p) { return /void/i.test(p); } },
+      { text: "must contain 'objbox'", check: function (p) { return /objbox/i.test(p); } },
+      { text: "your length must be a prime number", check: function (p) { return PWD.isPrime(p.length); } },
+      { text: "the sum of every character's ASCII code must be divisible by 7", check: function (p) { return PWD.asciiSum(p) % 7 === 0; } },
+      { text: "must contain the letter missing from 'abcdefghijklmnopqrstuvwyz'", check: function (p) { return /x/i.test(p); } },
+      { text: "must contain a matched pair of brackets ()", check: function (p) { return p.indexOf('(') !== -1 && p.indexOf(')') !== -1 && p.indexOf('(') < p.indexOf(')'); } },
+      { text: "must contain a data size unit (kb, mb, gb, tb)", check: function (p) { return /(kb|mb|gb|tb)/i.test(p); } }
     ];
-    let pwRuleCount = 5;
+    var pwRuleCount = 5;
     function checkPassword() {
       const p = document.getElementById('pwInput').value;
       const rulesEl = document.getElementById('pwRules');
@@ -832,6 +1042,145 @@
 
     // allow enter key for guess
     document.getElementById('guessInput').addEventListener('keydown', e => { if (e.key === 'Enter') makeGuess(); });
+
+    /* ===== KONAMI_ADMIN ===== */
+    var KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    var konamiPos = 0;
+    var adminUnlocked = false;
+
+    document.addEventListener('keydown', function (e) {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      var k = (e.key && e.key.length === 1) ? e.key.toLowerCase() : e.key;
+      if (k === KONAMI[konamiPos]) {
+        konamiPos++;
+        if (konamiPos === KONAMI.length) {
+          konamiPos = 0;
+          openKonami();
+        }
+      } else {
+        konamiPos = (k === KONAMI[0]) ? 1 : 0;
+      }
+    });
+
+    function openKonami() {
+      document.getElementById('konamiInput').value = '';
+      document.getElementById('konamiErr').textContent = '';
+      document.getElementById('konamiModal').classList.add('show');
+      setTimeout(function () { document.getElementById('konamiInput').focus(); }, 50);
+    }
+    function closeKonami() { document.getElementById('konamiModal').classList.remove('show'); }
+    function tryKonami() {
+      var val = document.getElementById('konamiInput').value.trim();
+      if (val === 'luxadmin') {
+        adminUnlocked = true;
+        closeKonami();
+        document.getElementById('adminModal').classList.add('show');
+      } else {
+        document.getElementById('konamiErr').textContent = 'wrong passphrase.';
+        document.getElementById('konamiInput').value = '';
+      }
+    }
+    function closeAdmin() { document.getElementById('adminModal').classList.remove('show'); }
+    function st(id, msg) { var el = document.getElementById(id); if (el) el.textContent = msg; }
+
+    var _origCheckPassword = checkPassword;
+    checkPassword = function () {
+      if (adminUnlocked) return forcePwWin();
+      return _origCheckPassword();
+    };
+
+    function forcePwWin() {
+      var rulesEl = document.getElementById('pwRules');
+      var winEl = document.getElementById('pwWin');
+      var progEl = document.getElementById('pwProgress');
+      if (!rulesEl) return;
+      rulesEl.innerHTML = '';
+      pwRules.forEach(function (r) {
+        var div = document.createElement('div');
+        div.className = 'rule pass';
+        div.innerHTML = '<span class="icon">\u2713</span> ' + r.text;
+        rulesEl.appendChild(div);
+      });
+      pwRuleCount = pwRules.length;
+      progEl.textContent = 'rules: ' + pwRules.length + '/' + pwRules.length + ' (TAS)';
+      winEl.textContent = 'you beat the password game! (tool-assisted)';
+    }
+
+    function tasPassword() {
+      var inp = document.getElementById('pwInput');
+      if (inp) inp.value = 'LuxAdmin1!luxlux.funobjboxhaydeenealsolvoidcuberngfishinglaboratorytranscendprestige';
+      forcePwWin();
+      st('st-pw', 'instant win applied.');
+    }
+    function tasPasswordReveal() {
+      pwRuleCount = pwRules.length;
+      adminUnlocked = false;
+      _origCheckPassword();
+      adminUnlocked = true;
+      st('st-pw', 'all ' + pwRules.length + ' rules revealed.');
+    }
+    function tasSpend() {
+      budget = 1e18; spent = 0;
+      renderSpend();
+      st('st-spend', 'infinite credits. buy everything.');
+    }
+    function tasClicker() {
+      clickerScore += 1e12;
+      document.getElementById('clickerScore').textContent = clickerScore.toLocaleString() + ' points';
+      st('st-clicker', '+1,000,000,000,000 points.');
+    }
+    function tasReaction() {
+      reactionTimes = [0, 0, 0, 0, 0];
+      document.getElementById('reactionResult').textContent = 'done! avg: 0ms, best: 0ms (TAS)';
+      document.getElementById('reactionHistory').textContent = 'times: 0, 0, 0, 0, 0 ms';
+      st('st-reaction', 'reaction set to 0ms.');
+    }
+    function tasMemory() {
+      document.querySelectorAll('.memory-card').forEach(function (c, i) {
+        c.classList.add('flipped', 'matched');
+        c.textContent = memoryCards[i];
+      });
+      document.getElementById('memoryStatus').textContent = 'all pairs revealed (TAS)';
+      st('st-memory', 'all cards revealed.');
+    }
+    function tasTyping() {
+      var passage = document.getElementById('typingArea').textContent;
+      var inp = document.getElementById('typingInput');
+      inp.value = passage;
+      typingStart = Date.now() - 2000;
+      typingDone = false;
+      checkTyping();
+      st('st-typing', 'auto-typed at TAS speed.');
+    }
+    function tasGuess() {
+      document.getElementById('guessStatus').textContent = 'the number is ' + secretNumber + ' (TAS)';
+      st('st-guess', 'revealed: ' + secretNumber);
+    }
+    function tasColor() {
+      var correctName = colorNames[currentColor];
+      document.querySelectorAll('#colorOptions button').forEach(function (b) {
+        if (b.textContent === correctName) {
+          b.style.outline = '3px solid #50c878';
+          b.style.background = 'rgba(80,200,120,0.3)';
+        }
+      });
+      st('st-color', 'answer: ' + correctName);
+    }
+    function tasAll() {
+      tasPassword();
+      tasSpend();
+      tasClicker();
+      tasReaction();
+      tasMemory();
+      tasTyping();
+      tasGuess();
+      tasColor();
+      st('st-all', 'all tas executed.');
+    }
+    function tasClear() {
+      ['st-pw','st-spend','st-clicker','st-reaction','st-memory','st-typing','st-guess','st-color','st-all'].forEach(function (id) { st(id, ''); });
+    }
+
   </script>
 </body>
 </html>
